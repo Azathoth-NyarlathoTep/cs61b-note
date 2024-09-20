@@ -114,11 +114,44 @@ public class Model extends Observable {
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
 
+        board.setViewingPerspective(side);
+
+        for(int c=0;c<board.size();c++) {
+            boolean[] checkMerged = new boolean[board.size()];
+            for(int r = board.size()-2;r>=0;r--) {
+                int k = Next(c,r+1);
+                Tile t = board.tile(c,r);
+                if(t!=null){
+                    if(k<board.size() && !checkMerged[k] && t.value() == board.tile(c,k).value()) {
+                        board.move(c,k,t);
+                        score+=t.value()*2;
+                        changed = true;
+                        checkMerged[k] = true;
+                    }
+                    else {
+                        board.move(c,k-1,t);
+                        changed = true;
+                    }
+                }
+            }
+        }
+
+        board.setViewingPerspective(Side.NORTH);
+
         checkGameOver();
         if (changed) {
             setChanged();
         }
         return changed;
+    }
+
+    public int Next(int col,int st){
+        int i = st;
+        while(i<board.size()){
+            if(board.tile(col,i) != null) break;
+            else i++;
+        }
+        return i;
     }
 
     /** Checks if the game is over and sets the gameOver variable
@@ -137,7 +170,12 @@ public class Model extends Observable {
      *  Empty spaces are stored as null.
      * */
     public static boolean emptySpaceExists(Board b) {
-        // TODO: Fill in this function.
+        /* TODO: Fill in this function. */
+        for(int i=0;i<b.size();i++)
+            for(int j=0;j<b.size();j++)
+                if(b.tile(i,j) == null) {
+                    return true;
+                }
         return false;
     }
 
@@ -147,7 +185,12 @@ public class Model extends Observable {
      * given a Tile object t, we get its value with t.value().
      */
     public static boolean maxTileExists(Board b) {
-        // TODO: Fill in this function.
+        for(int i=0;i<b.size();i++)
+            for(int j=0;j<b.size();j++) {
+                if (b.tile(i,j)!=null && b.tile(i, j).value() == MAX_PIECE) { //用MAX_PIECE这样的变量代替2048这些固定值更好一点，只需要在某个地方改一下变量值就可以全改
+                    return true;
+                }
+            }
         return false;
     }
 
@@ -158,7 +201,28 @@ public class Model extends Observable {
      * 2. There are two adjacent tiles with the same value.
      */
     public static boolean atLeastOneMoveExists(Board b) {
-        // TODO: Fill in this function.
+        if(emptySpaceExists(b)) {
+            return true;
+        }
+
+        for(int i=0;i<b.size()-1;i++){
+            for(int j=0;j<b.size();j++){
+                if(b.tile(i,j) != null){
+                    if(b.tile(i+1,j).value()==b.tile(i,j).value())
+                        return true;
+                }
+
+            }
+        }
+        for(int i=0;i<b.size();i++){
+            for(int j=0;j<b.size()-1;j++){
+                if(b.tile(i,j) != null){
+                    if(b.tile(i,j+1).value()==b.tile(i,j).value())
+                        return true;
+                }
+
+            }
+        }
         return false;
     }
 
