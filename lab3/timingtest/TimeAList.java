@@ -23,26 +23,28 @@ public class TimeAList {
 
     public static void timeAListConstruction() {
         // TODO: YOUR CODE HERE
-        AList<Integer> Ns = new AList<>();
-        AList<Double> timelist = new AList<>();
-        Ns.addLast(1000);
-        Ns.addLast(2000);
-        Ns.addLast(4000);
-        Ns.addLast(8000);
-        Ns.addLast(16000);
-        Ns.addLast(32000);
-        Ns.addLast(64000);
-        Ns.addLast(128000);
+        AList<Integer> nlist = new AList<Integer>();
+        AList timelist = new AList();
+        nlist.addLast(1000);
+        nlist.addLast(2000);
+        nlist.addLast(4000);
+        nlist.addLast(8000);
+        nlist.addLast(16000);
+        nlist.addLast(32000);
+        nlist.addLast(64000);
+        nlist.addLast(128000);
 
-        for(int i=0;i<Ns.size();i++) {
-            AList<Integer> tmp = new AList<>();
-            Stopwatch timer = new Stopwatch();
-            for(int j=0;j<Ns.get(i);j++) {
-                tmp.addLast(1);
+        for(int k=0;k<nlist.size();k++) {
+            AList<Integer> alist = new AList<>();
+            Stopwatch sw = new Stopwatch();
+            for(int i=0;i<nlist.get(k);i++) {
+                alist.addLast(1);
             }
-            double timeInSeconds = timer.elapsedTime();
+            double timeInSeconds = sw.elapsedTime();
             timelist.addLast(timeInSeconds);
+
         }
-        printTimingTable(Ns, timelist, Ns);
+
+        printTimingTable(nlist, timelist, nlist);
     }
 }
