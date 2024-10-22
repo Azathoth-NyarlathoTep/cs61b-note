@@ -26,6 +26,12 @@ public class ArrayDeque<T> implements Deque<T> {
         capacity = cap;
     }
 
+    private void shrinkSize() {
+        if (size < items.length / 4 && size > 4) {
+            resize(size * 2);
+        }
+    }
+
     @Override
     public void addFirst(T item) {
         if(size == items.length){
@@ -70,6 +76,7 @@ public class ArrayDeque<T> implements Deque<T> {
             T item = items[nextFirst];
             nextFirst = (nextFirst+1)%capacity;
             size--;
+            shrinkSize();
             return item;
         }
         return null;
@@ -81,6 +88,7 @@ public class ArrayDeque<T> implements Deque<T> {
             T item = items[nextLast];
             nextLast = (nextLast+capacity-1)%capacity;
             size--;
+            shrinkSize();
             return item;
         }
         return null;
