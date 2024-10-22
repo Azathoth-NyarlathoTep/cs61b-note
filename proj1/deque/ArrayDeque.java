@@ -72,12 +72,13 @@ public class ArrayDeque<T> implements Deque<T> {
 
     @Override
     public T removeFirst() {
-        if(size > 0){
-            T item = items[nextFirst];
-            nextFirst = (nextFirst+1)%capacity;
-            size--;
+        if (size > 0) {
+            int i = (nextFirst + 1) % capacity;
+            T v = items[i];
+            nextFirst = i;
+            size -= 1;
             shrinkSize();
-            return item;
+            return v;
         }
         return null;
     }
