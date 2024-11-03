@@ -1,7 +1,6 @@
 package test;
 import java.util.Comparator;
 
-import java.util.Comparator;
 
 public class Dog implements Comparable<Dog>{//把OurComparable改成Java内置的Comparable
     private String name;
@@ -17,6 +16,7 @@ public class Dog implements Comparable<Dog>{//把OurComparable改成Java内置�
         System.out.println(name + " says:bark");
     }
 
+    @Override
     public int compareTo(Dog uddaDog) {
 //        Dog uddaDog = (Dog) o;
 
