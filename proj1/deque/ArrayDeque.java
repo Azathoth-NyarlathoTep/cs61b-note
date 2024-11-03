@@ -91,8 +91,8 @@ public class ArrayDeque<T> implements Deque<T> {
     @Override
     public T removeLast() {
         if(size > 0){
-            T item = items[nextLast];
             nextLast = (nextLast+capacity-1)%capacity;
+            T item = items[nextLast];
             size--;
             shrinkSize();
             return item;
