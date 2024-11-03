@@ -107,4 +107,27 @@ public class ArrayDeque<T> implements Deque<T> {
         }
         return null;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof Deque)) {
+            return false;
+        }
+        Deque<?> ao = (Deque<?>) o;
+        if (ao.size() == size) {
+            for (int i = 0; i < size; i++) {
+                if (!(get(i).equals(ao.get(i)))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
 }
