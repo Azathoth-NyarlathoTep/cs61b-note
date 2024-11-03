@@ -43,7 +43,7 @@ public class LinkedListDeque<T> implements Deque<T> {
     }
 
     @Override
-    public void Print() {
+    public void printDeque() {
         if(size>0)
         {
             Node<T> p = sentinel;

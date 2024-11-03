@@ -8,7 +8,7 @@ public interface Deque <T>{
         else return false;
     }
     int size();
-    void Print();
+    void printDeque();
     T removeFirst();
     T removeLast();
     T get(int index);
