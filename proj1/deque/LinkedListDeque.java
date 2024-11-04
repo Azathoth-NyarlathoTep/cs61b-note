@@ -6,9 +6,9 @@ public class LinkedListDeque<T> implements Deque<T>,Iterable<T> {
 
     private static class Node<T>{
         private T value;
-        private Node<T> next,prev;
+        private Node <T> next,prev;
 
-        Node(T value, Node<T> prev, Node<T> next){
+        Node(T value, Node <T> prev, Node <T> next) {
             this.value = value;
             this.next = next;
             this.prev = prev;
@@ -18,7 +18,7 @@ public class LinkedListDeque<T> implements Deque<T>,Iterable<T> {
     private Node<T> sentinel;
     private int size;
 
-    public LinkedListDeque(){
+    public LinkedListDeque() {
         sentinel = new Node<T>(null, null, null);
         sentinel.next = sentinel;
         sentinel.prev = sentinel;
@@ -86,10 +86,10 @@ public class LinkedListDeque<T> implements Deque<T>,Iterable<T> {
 
     @Override
     public T get(int index) {
-        if(index>=0 && index<size)
+        if(index >= 0 && index<size)
         {
             Node<T> p = sentinel;
-            for(int i =0;i<=index;i++)
+            for(int i = 0 ; i <= index ; i++)
                 p =  p.next;
             return p.value;
         }
@@ -115,15 +115,15 @@ public class LinkedListDeque<T> implements Deque<T>,Iterable<T> {
         return new LinkedListDequeIterator();
     }
 
-    private class LinkedListDequeIterator implements Iterator<T>{
+    private class LinkedListDequeIterator implements Iterator<T> {
         private Node<T> p;
 
-        public LinkedListDequeIterator(){
+        public LinkedListDequeIterator() {
             p = sentinel;
         }
 
-        public boolean hasNext(){
-            return p.next!=sentinel;
+        public boolean hasNext() {
+            return p.next != sentinel;
         }
 
         public T next(){
