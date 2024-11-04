@@ -115,7 +115,7 @@ public class ArrayDeque<T> implements Deque<T>,Iterable<T> {
         return new ArrayDequeIterator();
     }
 
-    public class ArrayDequeIterator implements Iterator<T>{
+    private class ArrayDequeIterator implements Iterator<T>{
         private int p;
 
         public ArrayDequeIterator() {
@@ -141,7 +141,7 @@ public class ArrayDeque<T> implements Deque<T>,Iterable<T> {
         if (o == this) {
             return true;
         }
-        if (!(o instanceof ArrayDeque)) {
+        if (!(o instanceof Deque)) {
             return false;
         }
         Deque<?> ao = (Deque<?>) o;

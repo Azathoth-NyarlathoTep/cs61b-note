@@ -9,7 +9,7 @@ public class MaxArrayDeque<T> extends ArrayDeque<T> {
         DequeComparator = c;
     }
 
-    public T max(Comparator<T> c){
+    private T max(Comparator<T> c){
         if(size() == 0) return null;
         int maxIndex = 0;
         for(int i = 0; i < size(); i++){
