@@ -152,4 +152,15 @@ public class LinkedListDequeTest {
         ad2.addLast(1);
         assertEquals(ad1, ad2);
     }
+
+    @Test
+    public void OneTest() {
+        LinkedListDeque<Integer> ad1 = new LinkedListDeque<>();
+        ad1.addFirst(0);
+//        System.out.println(ad1.get(1));
+        ad1.removeFirst();
+        ad1.addLast(2);
+//        System.out.println(ad1.get(0));
+        assertEquals(2,(int)ad1.get(0));
+    }
 }

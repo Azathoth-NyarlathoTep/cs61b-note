@@ -89,7 +89,7 @@ public class LinkedListDeque<T> implements Deque<T>,Iterable<T> {
         if(index>=0 && index<size)
         {
             Node<T> p = sentinel;
-            for(int i =0;i<index;i++)
+            for(int i =0;i<=index;i++)
                 p =  p.next;
             return p.value;
         }
