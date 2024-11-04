@@ -97,7 +97,6 @@ public class LinkedListDeque<T> implements Deque<T>,Iterable<T> {
     }
 
     public T getRecursive(int index) {
-
         return getRecursiveHelper(sentinel.next, index);
     }
 
@@ -142,13 +141,13 @@ public class LinkedListDeque<T> implements Deque<T>,Iterable<T> {
         if (o == this) {
             return true;
         }
-        if (!(o instanceof Deque)) {
+        if (!(o instanceof LinkedListDeque)) {
             return false;
         }
         Deque<?> lo = (Deque<?>) o;
         if (lo.size() == size) {
             for (int i = 0; i < size; i++) {
-                if (!(get(i).equals(lo.get(i)))) {
+                if (!(get(i) == (lo.get(i)))) {
                     return false;
                 }
             }
