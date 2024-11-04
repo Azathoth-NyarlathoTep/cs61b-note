@@ -15,6 +15,9 @@ public class ArraySet<T> implements Iterable<T> {
 
     public boolean contains(T x){
         for(int i = 0; i < size; i++){
+            if(items[i] == null){//考虑到null的情况
+                return x == null;
+            }
             if(items[i].equals(x)){     //这将直接查看二者在语义上是否相等而不会出现检查字符串而错误地去比较地址的错误
                 return true;
             }

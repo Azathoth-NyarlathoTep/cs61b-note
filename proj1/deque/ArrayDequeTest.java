@@ -21,7 +21,7 @@ public class ArrayDequeTest {
         assertEquals("Should have size 3", 3, arrayDeque.size());
 
         System.out.println("Printing out deque: ");
-        arrayDeque.Print();
+        arrayDeque.printDeque();
     }
 
     @Test
