@@ -90,7 +90,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
 
     @Override
     public T removeLast() {
-        if(size > 0){
+        if (size > 0) {
             nextLast = (nextLast + capacity - 1) % capacity;
             T item = items[nextLast];
             size--;
@@ -103,7 +103,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     @Override
     public T get(int index) {
         if (index >= 0 && index < size) {
-            return items[(nextFirst + index+1) % capacity];
+            return items[(nextFirst + index + 1) % capacity];
         }
         return null;
     }
@@ -113,10 +113,10 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         return new ArrayDequeIterator();
     }
 
-    private class ArrayDequeIterator implements Iterator<T>{
+    private class ArrayDequeIterator implements Iterator<T> {
         private int p;
 
-        public ArrayDequeIterator() {
+        ArrayDequeIterator() {
             p = 0;
         }
 
