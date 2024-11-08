@@ -53,6 +53,7 @@ public class CapersRepository {
         // TODO
          String tmp = readContentsAsString(storyFile);
          writeContents(storyFile, tmp + text + '\n');
+         System.out.println(tmp + text);
     }
 
     /**
