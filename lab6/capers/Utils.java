@@ -111,6 +111,7 @@ class Utils {
     }
 
 
+
     /* SERIALIZATION UTILITIES */
 
     /** Returns a byte array containing the serialized contents of OBJ. */
