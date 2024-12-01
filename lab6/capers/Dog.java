@@ -62,10 +62,10 @@ public class Dog implements Serializable{ // TODO
         File dogFile = new File(DOG_FOLDER, name);
         try {
             dogFile.createNewFile();
+            writeObject(dogFile, this);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        writeObject(dogFile, this);
     }
 
     @Override
