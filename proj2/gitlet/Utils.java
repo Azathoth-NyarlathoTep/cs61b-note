@@ -14,9 +14,10 @@ import java.nio.file.Paths;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.Formatter;
-import java.util.List;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import static gitlet.Repository.*;
 
 
 /** Assorted utilities.
@@ -191,14 +192,14 @@ class Utils {
     /* OTHER FILE UTILITIES */
 
     /** Return the concatentation of FIRST and OTHERS into a File designator,
-     *  analogous to the {@link java.nio.file.Paths.#get(String, String[])}
+     *  analogous to the {@link java.nio.file.Paths. #get(String, String[])}
      *  method. */
     static File join(String first, String... others) {
         return Paths.get(first, others).toFile();
     }
 
     /** Return the concatentation of FIRST and OTHERS into a File designator,
-     *  analogous to the {@link java.nio.file.Paths.#get(String, String[])}
+     *  analogous to the {@link java.nio.file.Paths. #get(String, String[])}
      *  method. */
     static File join(File first, String... others) {
         return Paths.get(first.getPath(), others).toFile();
@@ -236,4 +237,168 @@ class Utils {
         System.out.printf(msg, args);
         System.out.println();
     }
+
+    //以下代码都是自己添加的方法
+    static void exitWithSuccess(String s) {
+        if(!Objects.equals(s, "") && s != null){
+            System.out.println(s);
+        }
+        System.exit(0);
+    }
+
+    static String dateToTimeStamp(Date date) {
+        DateFormat dateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy Z", Locale.US);
+    }
+
+    static void createObjectFile(String id , Serializable obj) {
+        File filepath = join(Repository.OBJECTS_DIR,id.substring(0,2));
+        if(!filepath.exists()){
+            filepath.mkdirs();
+        }
+        File file = join(Repository.OBJECTS_DIR,id.substring(2));
+        try {
+            file.createNewFile();
+            writeObject(file, obj);
+        }catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    static void createCmObjectFile(String id , Serializable obj) {
+        File file= join(Repository.COMMITS_DIR ,id);
+        try {
+            file.createNewFile();
+            writeObject(file, obj);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    static void updateHEAD(String s) {
+         File file = join(Repository.HEADS_DIR,s);
+         File root = join(Repository.GITLET_DIR);
+         writeObject(Repository.HEAD_FILE,file.toPath().relativize(root.toPath()).toString());
+    }
+
+    static File getBranchFile(String... args) {       //这里选用...来传入args数组，这是好的，因为这样可以传入0个参数也是可以的，比之String[]更灵活，String[]更适合明确要用的是字符串数组的情况
+        switch(args.length) {
+            case 0:
+                return join(Repository.GITLET_DIR ,readContentsAsString(HEAD_FILE));
+            case 1:
+                return join(HEADS_DIR ,args[0]);
+        }
+        return null;
+    }
+
+    static String makeBlobId(String filename) {
+        File file = new File(filename);
+        String contents = readContentsAsString(file);
+        return sha1(contents);
+    }
+
+    static void checkGitLet() {
+        if(!Repository.GITLET_DIR.exists()) {
+            exitWithSuccess("Not in an initialized GitLet directory.");
+        }
+    }
+
+    static String getCurrentBranch() {
+        String str = readContentsAsString(Repository.HEADS_DIR);
+        String[] tmp = str.split("/");
+        String cr = tmp[tmp.length - 1];
+        return cr;
+    }
+
+    static void fileCheckout(String filename ,String id) {
+        Commit cm = Commit.fromId(id);
+        if(cm == null) {
+            exitWithSuccess("No commit with that id exists.");
+        }
+        String blobId = cm.getFileMap().get(filename);
+        if(blobId == null) {
+            exitWithSuccess("File does not exist in that commit.");
+        }
+        Blob blob = Blob.fromId(blobId);
+        File target = join(Repository.CWD,filename);
+        writeContents(target, blob.getContents());
+    }
+
+    static void commitCheckout(Commit curCm ,Commit targetCm) {
+        for(String filename : curCm.getFileMap().keySet()) {
+            if(!targetCm.getFileMap().containsKey(filename)) {
+                File f = join(CWD ,filename);
+                f.delete();
+            } else {
+                fileCheckout(filename ,targetCm.getId());
+            }
+        }
+
+        if(targetCm.getFileMap() != null) {
+            for(String filename : targetCm.getFileMap().keySet()) {
+                if(!targetCm.getFileMap().containsKey(filename)) {
+                    fileCheckout(filename ,targetCm.getId());
+                }
+            }
+        }
+    }
+
+    static void checkUntrackedOverwritten(Commit curCm ,Commit targetCm) { //参考答案版本只是遍历了当前的头提交而未有遍历暂存区，而按个人理解应该都要遍历以确认是否满足“未被跟踪的条件”
+        Stage stage = Stage.fromFile(INDEX_FILE);
+        for(String filename : targetCm.getFileMap().keySet()){
+            if(join(Repository.CWD ,filename).exists() && !curCm.getFileMap().containsKey(filename) && !stage.contains(filename)){
+                exitWithSuccess("There is an untracked file in the  way; delete it, or add and commit it first.");
+            }
+        }
+    }
+
+    static void checkStageClean() {
+        Stage stage = Stage.fromFile(INDEX_FILE);
+        if(!stage.empty()) {
+            exitWithSuccess("You have uncommitted changes.");
+        }
+    }
+
+    static void checkBranchExists(String branchName) {
+        if(!join(HEADS_DIR,branchName).exists()) {
+            exitWithSuccess("A branch with that name does not exist.");
+        }
+    }
+
+    static Set<String> getAllParents(Commit cm) {
+        Set<String> parents = new HashSet<>();
+        while(cm != null) {
+            parents.add(cm.getId());
+            cm = Commit.fromId(cm.getParentId());
+        }
+        return parents;
+    }
+
+    public static boolean dealConflict(Commit splitCm, Commit curCm, Commit targetCm, String fileName) {
+        boolean conflictExist = false;
+        if (!targetCm.getFileMap().containsKey(fileName)) { // modified in head, deleted in target
+            conflictExist = true;
+        } else if (!curCm.getFileMap().containsKey(fileName)) { // modified in target, deleted in head
+            conflictExist = true;
+        } else if (!curCm.getFileMap().get(fileName).equals(targetCm.getFileMap().get(fileName))) { // both modified
+            conflictExist = true;
+        }
+        if (conflictExist) {
+            Stage stage = Stage.fromFile(INDEX_FILE);
+            String contents1 = "";
+            String contents2 = "";
+            if (curCm.getFileMap().containsKey(fileName)) {
+                contents1 = readContentsAsString(join(CWD, fileName));
+            }
+            if (targetCm.getFileMap().containsKey(fileName)) {
+                Blob bl = Blob.fromId(targetCm.getFileMap().get(fileName));
+                contents2 = bl.getContents();
+            }
+            String contents = String.format("<<<<<<< HEAD\n%s=======\n%s>>>>>>>\n", contents1, contents2);
+            writeContents(join(CWD, fileName), contents);
+            String blid = makeBlobId(fileName);
+            stage.getAddMap().put(fileName, blid);
+        }
+        return conflictExist;
+    }
+
 }

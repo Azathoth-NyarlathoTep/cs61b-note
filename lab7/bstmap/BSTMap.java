@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class BSTMap<K extends Comparable<K>,V> implements Map61B<K, V> { //在泛型中继承接口的时候不能用implements只能用extends
-    public class Node{                                                  //而在这里extends是一种约束，它是用于确保K可以用于比较操作(即可以用compareTo()方法)
+    private class Node{                                                  //而在这里extends是一种约束，它是用于确保K可以用于比较操作(即可以用compareTo()方法)
         private K key;                                                  //这种方法本来是用于指定上界的，比如extends了number就不能用String相关方法等
         private V value;
         private Node left;
