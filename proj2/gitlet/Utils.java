@@ -60,7 +60,7 @@ class Utils {
 
     /** Returns the SHA-1 hash of the concatenation of the strings in
      *  VALS. */
-    static String sha1(List<Object> vals) {
+    static String sha1(List<? extends Object> vals) {
         return sha1(vals.toArray(new Object[vals.size()]));
     }
 
@@ -248,6 +248,7 @@ class Utils {
 
     static String dateToTimeStamp(Date date) {
         DateFormat dateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy Z", Locale.US);
+        return dateFormat.toString();
     }
 
     static void createObjectFile(String id , Serializable obj) {
@@ -275,9 +276,12 @@ class Utils {
     }
 
     static void updateHEAD(String s) {
-         File file = join(Repository.HEADS_DIR,s);
-         File root = join(Repository.GITLET_DIR);
-         writeObject(Repository.HEAD_FILE,file.toPath().relativize(root.toPath()).toString());
+//          File file = join(Repository.HEADS_DIR,s);
+//          File root = join(Repository.GITLET_DIR);
+//          writeContents(Repository.HEAD_FILE,file.toPath().relativize(root.toPath()).toString());
+            File branchFile = join(Repository.HEADS_DIR, s);
+            writeContents(Repository.HEAD_FILE,
+                Repository.GITLET_DIR.toURI().relativize(branchFile.toURI()).getPath());
     }
 
     static File getBranchFile(String... args) {       //这里选用...来传入args数组，这是好的，因为这样可以传入0个参数也是可以的，比之String[]更灵活，String[]更适合明确要用的是字符串数组的情况
