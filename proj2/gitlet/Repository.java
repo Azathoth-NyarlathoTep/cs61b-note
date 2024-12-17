@@ -33,7 +33,7 @@ public class Repository {
     public static final File HEADS_DIR = join(REFS_DIR, "heads");
     public static final File REMOTES_DIR = join(REFS_DIR, "remotes");
     public static final File HEAD_FILE = join(GITLET_DIR, "head");
-    public static final File INDEX_FILE = join(GITLET_DIR, "index");
+    public static final File INDEX_FILE = join(GITLET_DIR, "INDEX");
     public static final File MASTER_FILE = join(HEADS_DIR, "master");
 
     public static void Init(){
@@ -46,6 +46,8 @@ public class Repository {
         REFS_DIR.mkdir();
         HEADS_DIR.mkdir();
         REMOTES_DIR.mkdir();
+        Stage stage = new Stage();
+        stage.saveStage();
 
         try {
             MASTER_FILE.createNewFile();
@@ -80,7 +82,7 @@ public class Repository {
             }
         } else {
             String Blob_id = makeBlobId(FileName);
-            Stage stage = Stage.fromFile(HEADS_DIR);
+            Stage stage = Stage.fromFile(INDEX_FILE);
             stage.AddAndSave(FileName , Blob_id);
         }
     }
