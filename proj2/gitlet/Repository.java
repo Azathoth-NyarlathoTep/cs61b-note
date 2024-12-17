@@ -148,8 +148,7 @@ public class Repository {
         Commit cm = Commit.fromFile(getBranchFile());
         while(cm != null) {
             System.out.println(cm);
-            File parentPath = join(COMMITS_DIR ,cm.getParentId());
-            cm = Commit.fromFile(parentPath);
+            cm = Commit.fromId(cm.getParentId());
         }
     }
 
