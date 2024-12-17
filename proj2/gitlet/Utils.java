@@ -248,7 +248,7 @@ class Utils {
 
     static String dateToTimeStamp(Date date) {
         DateFormat dateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy Z", Locale.US);
-        return dateFormat.toString();
+        return dateFormat.format(date);
     }
 
     static void createObjectFile(String id , Serializable obj) {

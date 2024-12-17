@@ -99,7 +99,7 @@ public class Commit implements Serializable {
     public String toString() {
         StringBuilder SB = new StringBuilder("===\n");
         SB.append("commit " + id + "\n");
-        SB.append("Date " + timestamp + "\n");
+        SB.append("Date: " + timestamp + "\n");
         SB.append(message + "\n");
         return SB.toString();
     }
