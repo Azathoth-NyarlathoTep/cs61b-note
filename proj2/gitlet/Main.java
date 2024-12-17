@@ -16,7 +16,16 @@ public class Main {
                 Repository.Init();
                 break;
             case "add":
-                // TODO: handle the `add [filename]` command
+                Repository.Add(args[1]);
+                break;
+            case "commit":
+                Repository.commit(args);
+                break;
+            case "checkout":
+                Repository.checkout(args);
+                break;
+            case "log":
+                Repository.Log();
                 break;
             // TODO: FILL THE REST IN
         }

@@ -279,7 +279,7 @@ class Utils {
 //          File file = join(Repository.HEADS_DIR,s);
 //          File root = join(Repository.GITLET_DIR);
 //          writeContents(Repository.HEAD_FILE,file.toPath().relativize(root.toPath()).toString());
-            File branchFile = join(Repository.HEADS_DIR, s);
+            File branchFile = join(Repository.HEADS_DIR, s) ;
             writeContents(Repository.HEAD_FILE,
                 Repository.GITLET_DIR.toURI().relativize(branchFile.toURI()).getPath());
     }
