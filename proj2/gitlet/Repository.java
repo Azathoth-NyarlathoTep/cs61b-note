@@ -251,10 +251,10 @@ public class Repository {
                 if(getCurrentBranch().equals(branchName)) {
                     exitWithSuccess("No need to checkout the current branch.");
                 }
+                Commit cm = Commit.fromFile(getBranchFile());
+                Commit targetCm = Commit.fromId(readContentsAsString(join(HEADS_DIR ,branchName)));
+                checkUntrackedOverwritten(cm ,targetCm);
                 if(!readContentsAsString(getBranchFile()).equals(readContentsAsString(getBranchFile(branchName)))) {
-                    Commit cm = Commit.fromFile(getBranchFile());
-                    Commit targetCm = Commit.fromId(readContentsAsString(join(HEADS_DIR ,branchName)));
-                    checkUntrackedOverwritten(cm ,targetCm);
                     commitCheckout(cm ,targetCm);
                 }
 
