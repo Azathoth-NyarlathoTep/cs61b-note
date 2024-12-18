@@ -75,14 +75,18 @@ public class Repository {
         if(cm.getFileMap()!=null && cm.getFileMap().containsKey(FileName)) {
             Stage stage = Stage.fromFile(INDEX_FILE);
             String target = makeBlobId(FileName);
+            Blob blob = new Blob(FileName);
             if(cm.getFileMap().get(FileName).equals(target)) {
                 exitWithSuccess("");
             } else {
+                createObjectFile(target ,blob);
                 stage.AddAndSave(FileName , target);
             }
         } else {
             String Blob_id = makeBlobId(FileName);
+            Blob blob = new Blob(FileName);
             Stage stage = Stage.fromFile(INDEX_FILE);
+            createObjectFile(Blob_id ,blob);
             stage.AddAndSave(FileName , Blob_id);
         }
     }
@@ -230,8 +234,10 @@ public class Repository {
         switch (args.length) {
             case 3:
                 fileCheckout(args[2] ,readContentsAsString(getBranchFile()));
+                break;
             case 4:
                 fileCheckout(args[3] ,args[1]);
+                break;
             case 2:
                 String branchName = args[1];
                 if(!join(HEADS_DIR ,branchName).exists()) {
@@ -246,6 +252,7 @@ public class Repository {
                 commitCheckout(cm ,targetCm);
 
                 updateHEAD(branchName);
+                break;
         }
     }
 

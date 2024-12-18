@@ -64,6 +64,12 @@ class Utils {
         return sha1(vals.toArray(new Object[vals.size()]));
     }
 
+    static String getFileSha1(String filename) {
+        File file = new File(filename);
+        String contents = readContentsAsString(file);
+        return sha1(filename ,contents);
+    }
+
     /* FILE DELETION */
 
     /** Deletes FILE if it exists and is not a directory.  Returns true
@@ -257,7 +263,7 @@ class Utils {
         if(!filepath.exists()){
             filepath.mkdirs();
         }
-        File file = join(Repository.OBJECTS_DIR,id.substring(2));
+        File file = join(filepath,id.substring(2));
         try {
             file.createNewFile();
             writeObject(file, obj);
