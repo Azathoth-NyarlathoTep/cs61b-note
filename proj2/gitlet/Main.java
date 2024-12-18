@@ -1,5 +1,7 @@
 package gitlet;
 
+import static gitlet.Utils.exitWithSuccess;
+
 /** Driver class for Gitlet, a subset of the Git version-control system.
  *  @author TODO
  */
@@ -9,7 +11,9 @@ public class Main {
      *  <COMMAND> <OPERAND1> <OPERAND2> ... 
      */
     public static void main(String[] args) {
-        // TODO: what if args is empty?
+        if (args.length == 0) {
+            exitWithSuccess("Please enter a command.");
+        }
         String firstArg = args[0];
         switch(firstArg) {
             case "init":
@@ -27,7 +31,32 @@ public class Main {
             case "log":
                 Repository.Log();
                 break;
-            // TODO: FILL THE REST IN
+            case "rm":
+                Repository.Remove(args[1]);
+                break;
+            case "global-log":
+                Repository.globalLog();
+                break;
+            case "find":
+                Repository.Find(args);
+                break;
+            case "status":
+                Repository.Status();
+                break;
+            case "branch":
+                Repository.Branch(args);
+                break;
+            case "rm-branch":
+                Repository.rmBranch(args);
+                break;
+            case "reset":
+                Repository.reset(args);
+                break;
+            case "merge":
+                Repository.Merge(args);
+                break;
+            default:
+                exitWithSuccess("No command with that name exists.");
         }
     }
 }

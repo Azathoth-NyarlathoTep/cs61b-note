@@ -287,7 +287,7 @@ public class Repository {
         BranchFile.delete();
     }
 
-    public static void set(String[] args) {
+    public static void reset(String[] args) {
         checkGitLet();
 
         String cmId = args[1];
