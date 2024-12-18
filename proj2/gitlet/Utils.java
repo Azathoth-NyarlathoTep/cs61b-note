@@ -253,7 +253,7 @@ class Utils {
     }
 
     static String dateToTimeStamp(Date date) {
-        DateFormat dateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy Z", Locale.US);
+        DateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy Z", Locale.ENGLISH);
         dateFormat.setTimeZone(TimeZone.getTimeZone("GMT-8"));
         return dateFormat.format(date);
     }
