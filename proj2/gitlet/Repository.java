@@ -168,7 +168,7 @@ public class Repository {
 
         if (ls != null) {
             for(String filename : ls) {
-                Commit cm = Commit.fromFile(join(COMMITS_DIR ,filename));
+                Commit cm = Commit.fromId(filename);
                 System.out.println(cm);
             }
         }
@@ -251,10 +251,12 @@ public class Repository {
                 if(getCurrentBranch().equals(branchName)) {
                     exitWithSuccess("No need to checkout the current branch.");
                 }
-                Commit cm = Commit.fromFile(getBranchFile());
-                Commit targetCm = Commit.fromId(readContentsAsString(join(HEADS_DIR ,branchName)));
-                checkUntrackedOverwritten(cm ,targetCm);
-                commitCheckout(cm ,targetCm);
+                if(!readContentsAsString(getBranchFile()).equals(readContentsAsString(getBranchFile(branchName)))) {
+                    Commit cm = Commit.fromFile(getBranchFile());
+                    Commit targetCm = Commit.fromId(readContentsAsString(join(HEADS_DIR ,branchName)));
+                    checkUntrackedOverwritten(cm ,targetCm);
+                    commitCheckout(cm ,targetCm);
+                }
 
                 updateHEAD(branchName);
                 break;
