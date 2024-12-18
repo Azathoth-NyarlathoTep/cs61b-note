@@ -224,8 +224,8 @@ public class Repository {
         System.out.println();
 
         //TODO : 可先不写等写完再来完善
-        System.out.println("=== Modifications Not Staged For Commit ===");
-        System.out.println("=== Untracked Files ===");
+        System.out.println("=== Modifications Not Staged For Commit ===\n");
+        System.out.println("=== Untracked Files ===\n");
     }
 
     public static void checkout(String[] args) {
