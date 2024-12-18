@@ -359,6 +359,7 @@ class Utils {
         Stage stage = Stage.fromFile(INDEX_FILE);
         for(String filename : targetCm.getFileMap().keySet()){
             if(join(Repository.CWD ,filename).exists() && !curCm.getFileMap().containsKey(filename) && !stage.contains(filename)){
+                System.out.println(filename);
                 exitWithSuccess("There is an untracked file in the way; delete it, or add and commit it first.");
             }
         }

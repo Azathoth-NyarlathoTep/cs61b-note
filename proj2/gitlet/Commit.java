@@ -42,6 +42,7 @@ public class Commit implements Serializable {
             ls.add(timestamp);
             id = sha1(ls);
         } else {
+            FileMap = new HashMap<>(cm.getFileMap());
             Date date = new Date();
             timestamp = dateToTimeStamp(date);
             parent = cm.getId();
