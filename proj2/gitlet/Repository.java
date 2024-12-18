@@ -57,7 +57,7 @@ public class Repository {
             throw new RuntimeException(e);
         }
 
-        Commit cm = new Commit(null,"Initial commit");
+        Commit cm = new Commit(null,"initial commit");
         String id = cm.getId();
         cm.saveCommit();
         writeContents(MASTER_FILE ,cm.getId());
