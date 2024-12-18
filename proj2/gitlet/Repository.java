@@ -253,7 +253,7 @@ public class Repository {
                 }
                 Commit cm = Commit.fromFile(getBranchFile());
                 Commit targetCm = Commit.fromId(readContentsAsString(join(HEADS_DIR ,branchName)));
-                checkUntrackedOverwritten(cm ,targetCm);
+                checkUntrackedLocal(cm ,targetCm);
                 if(!readContentsAsString(getBranchFile()).equals(readContentsAsString(getBranchFile(branchName)))) {
                     commitCheckout(cm ,targetCm);
                 }
@@ -303,6 +303,7 @@ public class Repository {
         }
         Commit curCm = Commit.fromFile(getBranchFile());
         Commit targetCm = Commit.fromId(cmId);
+        checkUntrackedOverwritten(curCm ,targetCm);
         commitCheckout(curCm ,targetCm);
         writeContents(getBranchFile(),cmId);
         Stage stage = Stage.fromFile(INDEX_FILE);
