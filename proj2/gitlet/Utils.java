@@ -316,7 +316,7 @@ class Utils {
     }
 
     static String getCurrentBranch() {
-        String str = readContentsAsString(Repository.HEADS_DIR);
+        String str = readContentsAsString(HEAD_FILE);
         String[] tmp = str.split("/");
         String cr = tmp[tmp.length - 1];
         return cr;
