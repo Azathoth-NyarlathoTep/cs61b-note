@@ -342,7 +342,9 @@ class Utils {
                 File f = join(CWD ,filename);
                 f.delete();
             } else {
-                fileCheckout(filename ,targetCm.getId());
+                if(!targetCm.getFileMap().get(filename).equals(curCm.getFileMap().get(filename))) {
+                    fileCheckout(filename ,targetCm.getId());
+                }
             }
         }
 
@@ -358,8 +360,7 @@ class Utils {
     static void checkUntrackedOverwritten(Commit curCm ,Commit targetCm) { //参考答案版本只是遍历了当前的头提交而未有遍历暂存区，而按个人理解应该都要遍历以确认是否满足“未被跟踪的条件”
         Stage stage = Stage.fromFile(INDEX_FILE);
         for(String filename : targetCm.getFileMap().keySet()){
-            if(join(Repository.CWD ,filename).exists() && !curCm.getFileMap().containsKey(filename) && !stage.contains(filename)){
-                System.out.println(filename);
+            if(join(CWD ,filename).exists() && !curCm.getFileMap().containsKey(filename) && !stage.contains(filename)){
                 exitWithSuccess("There is an untracked file in the way; delete it, or add and commit it first.");
             }
         }
