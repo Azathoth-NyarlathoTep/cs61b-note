@@ -76,6 +76,11 @@ public class Repository {
             Stage stage = Stage.fromFile(INDEX_FILE);
             String target = makeBlobId(FileName);
             Blob blob = new Blob(FileName);
+            if(stage.getRmList().contains(FileName)) {
+                stage.getRmList().remove(FileName);
+                stage.saveStage();
+                return ;
+            }
             if(cm.getFileMap().get(FileName).equals(target)) {
                 exitWithSuccess("");
             } else {
