@@ -364,6 +364,7 @@ public class Repository {
                 if(curCmMap.containsKey(fileName) && targetCmMap.containsKey(fileName)) {
                     if(!splitCmMap.get(fileName).equals(targetCmMap.get(fileName)) && splitCmMap.get(fileName).equals(curCmMap.get(fileName))) { //case 1
                         stage.getAddMap().put(fileName,targetCmMap.get(fileName));
+                        stage.saveStage();
                         fileCheckout(fileName , targetCm.getId());
                         continue;
                     }
@@ -375,6 +376,7 @@ public class Repository {
                 if(curCmMap.containsKey(fileName)) {
                     if(splitCmMap.get(fileName).equals(curCmMap.get(fileName))) { //case 6
                         stage.getRmList().add(fileName);
+                        stage.saveStage();
                         join(CWD ,fileName).delete();
                         continue;
                     }
@@ -385,11 +387,12 @@ public class Repository {
                 }
                 conflictExists  = dealConflict(splitCm ,curCm ,targetCm ,fileName);
             } else {
-                if(!targetCmMap.containsKey(fileName) && curCmMap.containsKey(fileName)) { //case 5
+                if(!targetCmMap.containsKey(fileName) && curCmMap.containsKey(fileName)) { //case 4
                     continue;
                 }
-                if(!curCmMap.containsKey(fileName) && targetCmMap.containsKey(fileName)) { //case 6
+                if(!curCmMap.containsKey(fileName) && targetCmMap.containsKey(fileName)) { //case 5
                     stage.getAddMap().put(fileName,targetCmMap.get(fileName));
+                    stage.saveStage();
                     fileCheckout(fileName , targetCm.getId());
                     continue;
                 }
