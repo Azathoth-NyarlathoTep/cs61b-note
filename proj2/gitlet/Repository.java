@@ -256,7 +256,8 @@ public class Repository {
                 }
                 Commit cm = Commit.fromFile(getBranchFile());
                 Commit targetCm = Commit.fromId(readContentsAsString(join(HEADS_DIR ,branchName)));
-                checkUntrackedLocal(cm ,targetCm);
+//                checkUntrackedLocal(cm ,targetCm);
+                checkUntrackedOverwritten(cm, targetCm);
                 if(!readContentsAsString(getBranchFile()).equals(readContentsAsString(getBranchFile(branchName)))) {
                     commitCheckout(cm ,targetCm);
                 }
