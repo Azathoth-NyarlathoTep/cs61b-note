@@ -371,7 +371,9 @@ public class Repository {
                     if(!splitCmMap.get(fileName).equals(curCmMap.get(fileName)) && splitCmMap.get(fileName).equals(targetCmMap.get(fileName))) { //case 2
                         continue;
                     }
-                    else continue; //case 3
+                    if(splitCmMap.get(fileName).equals(curCmMap.get(fileName)) && splitCmMap.get(fileName).equals(targetCmMap.get(fileName))) {
+                        continue;
+                    }
                 }
                 if(curCmMap.containsKey(fileName)) {
                     if(splitCmMap.get(fileName).equals(curCmMap.get(fileName))) { //case 6

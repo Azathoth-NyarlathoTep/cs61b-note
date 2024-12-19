@@ -432,6 +432,7 @@ class Utils {
             writeContents(join(CWD, fileName), contents);
             String blid = makeBlobId(fileName);
             stage.getAddMap().put(fileName, blid);
+            stage.saveStage();
         }
         return conflictExist;
     }
