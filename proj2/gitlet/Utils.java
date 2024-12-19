@@ -436,4 +436,17 @@ class Utils {
         return conflictExist;
     }
 
+    public static String getFullID(String id) {
+        if(id.length() == 40) {
+            return id;
+        }
+
+        List<String> fileNames = plainFilenamesIn(COMMITS_DIR);
+        for(String fileName : fileNames) {
+            if(fileName.startsWith(id)) {
+                return fileName;
+            }
+        }
+        return null;
+    }
 }

@@ -244,7 +244,7 @@ public class Repository {
                 fileCheckout(args[3] ,args[1]);
                 break;
             case 2:
-                String branchName = args[1];
+                String branchName = getFullID(args[1]);
                 if(!join(HEADS_DIR ,branchName).exists()) {
                     exitWithSuccess("No such branch exists.h");
                 }
@@ -297,7 +297,7 @@ public class Repository {
     public static void reset(String[] args) {
         checkGitLet();
 
-        String cmId = args[1];
+        String cmId = getFullID(args[1]);
         if(!join(COMMITS_DIR ,cmId).exists()) {
             exitWithSuccess("No commit with that id exists.");
         }

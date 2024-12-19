@@ -34,15 +34,15 @@ heads对应的是本地的仓库中的所有分支，如果我们有一个`maste
 ### Class 1 Commit类
 将每一个提交都看作一个对象，这个对象应该包含
 
-1.parents(即对父节点的引用)
+1. parents(即对父节点的引用)
 
-2.id(表示该提交对象的hashcode编码)
+2. id(表示该提交对象的hashcode编码)
 
-3.message(commit提交的时候带的类似于备注的信息)
+3. message(commit提交的时候带的类似于备注的信息)
 
-4.timestamp(时间戳)
+4. timestamp(时间戳)
 
-5.fileMap(一个Map，映射到对应的blob)
+5. fileMap(一个Map，映射到对应的blob)
 
 ### Class 2 Blob类
 每一个文件的不同版本都可以视为一个Blob，这个对象只包含`id`和`contents`两个成员，分别表示该类的hashcode和内容字符串
@@ -50,7 +50,7 @@ heads对应的是本地的仓库中的所有分支，如果我们有一个`maste
 这个Blob类较为特殊，它是id和文本内容的映射，也正是它映射的是用户真正要存储的文件，所以才能以这样的形式存储下来，其本身的存储还是以sha-1编码存在`Objects`中的
 
 ### Class 3 Stage类
-包含一个Map用于表示添加的文件极其对应的Blob和一个List用于表示删除的文件列表，因为一个文件可能对应多个Blob版本但是删除只有文件的对应所以无需用Map来存储
+包含一个Map用于表示添加的文件及其对应的Blob和一个List用于表示删除的文件列表，因为一个文件可能对应多个Blob版本但是删除只有文件的对应所以无需用Map来存储
 
 ### Class 4 Utils
 这个类是Proj提供的工具类，也可以自己定义静态方法在这里以供项目使用
@@ -75,6 +75,8 @@ heads对应的是本地的仓库中的所有分支，如果我们有一个`maste
 
 ### Add realization
 判断该文件是否存在，不存在则需要给出错误信息
+
+注：我们的`Blob`类型是在每次add的时候添加到Objects文件夹下的
 
 按两种情况:
 
