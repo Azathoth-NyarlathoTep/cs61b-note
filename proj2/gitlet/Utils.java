@@ -323,6 +323,7 @@ class Utils {
     }
 
     static void fileCheckout(String filename ,String id) {
+        id = getFullID(id);
         Commit cm = Commit.fromId(id);
         if(cm == null) {
             exitWithSuccess("No commit with that id exists.");
@@ -350,7 +351,7 @@ class Utils {
 
         if(targetCm.getFileMap() != null) {
             for(String filename : targetCm.getFileMap().keySet()) {
-                if(!curCm.getFileMap().containsKey(filename)) {
+                if(curCm.getFileMap().get(filename) == null) {
                     fileCheckout(filename ,targetCm.getId());
                 }
             }

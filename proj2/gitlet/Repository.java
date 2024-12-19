@@ -140,7 +140,7 @@ public class Repository {
             }
         }
         //removal
-        if(!stage.addEmpty()) {
+        if(!stage.rmEmpty()) {
             for(String Filename : stage.getRmList()) {
                 newcm.removeFile(Filename);
             }
