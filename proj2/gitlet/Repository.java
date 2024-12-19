@@ -341,7 +341,7 @@ public class Repository {
 
         if(splitCm.getId().equals(curCm.getId())) {
             commitCheckout(curCm ,targetCm);
-            exitWithSuccess("Current branch fast-forwarded");
+            exitWithSuccess("Current branch fast-forwarded.");
         }
         if(splitCm.getId().equals(targetCm.getId())) {
             exitWithSuccess("Given branch is an ancestor of the current branch.");
