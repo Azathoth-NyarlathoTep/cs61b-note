@@ -249,7 +249,7 @@ public class Repository {
             case 2:
                 String branchName = args[1];
                 if(!join(HEADS_DIR ,branchName).exists()) {
-                    exitWithSuccess("No such branch exists.h");
+                    exitWithSuccess("No such branch exists.");
                 }
                 if(getCurrentBranch().equals(branchName)) {
                     exitWithSuccess("No need to checkout the current branch.");
@@ -362,36 +362,33 @@ public class Repository {
         for(String fileName : allFiles) {
             if(splitCmMap.containsKey(fileName)) {
                 if(curCmMap.containsKey(fileName) && targetCmMap.containsKey(fileName)) {
-                    if(!splitCmMap.get(fileName).equals(targetCmMap.get(fileName)) && splitCmMap.get(fileName).equals(curCmMap.get(fileName))) { //case 3
+                    if(!splitCmMap.get(fileName).equals(targetCmMap.get(fileName)) && splitCmMap.get(fileName).equals(curCmMap.get(fileName))) { //case 1
                         stage.getAddMap().put(fileName,targetCmMap.get(fileName));
                         fileCheckout(fileName , targetCm.getId());
                         continue;
                     }
-                    if(!splitCmMap.get(fileName).equals(curCmMap.get(fileName)) && splitCmMap.get(fileName).equals(targetCmMap.get(fileName))) { //case 4
+                    if(!splitCmMap.get(fileName).equals(curCmMap.get(fileName)) && splitCmMap.get(fileName).equals(targetCmMap.get(fileName))) { //case 2
                         continue;
                     }
+                    else continue; //case 3
                 }
                 if(curCmMap.containsKey(fileName)) {
-                    if(splitCmMap.get(fileName).equals(curCmMap.get(fileName))) { //case 5
+                    if(splitCmMap.get(fileName).equals(curCmMap.get(fileName))) { //case 6
                         stage.getRmList().add(fileName);
                         join(CWD ,fileName).delete();
                         continue;
-                    } else {
-                        if(splitCmMap.get(fileName).equals(targetCmMap.get(fileName))) { //case 5
-                            continue;
-                        }
                     }
                 } else {
-                    if (splitCmMap.get(fileName).equals(targetCmMap.get(fileName)) && !curCmMap.containsKey(fileName)) {
+                    if (splitCmMap.get(fileName).equals(targetCmMap.get(fileName)) && !curCmMap.containsKey(fileName)) { //case 7
                         continue;
                     }
                 }
                 conflictExists  = dealConflict(splitCm ,curCm ,targetCm ,fileName);
             } else {
-                if(!targetCmMap.containsKey(fileName) && curCmMap.containsKey(fileName)) { //case 6
+                if(!targetCmMap.containsKey(fileName) && curCmMap.containsKey(fileName)) { //case 5
                     continue;
                 }
-                if(!curCmMap.containsKey(fileName) && targetCmMap.containsKey(fileName)) {
+                if(!curCmMap.containsKey(fileName) && targetCmMap.containsKey(fileName)) { //case 6
                     stage.getAddMap().put(fileName,targetCmMap.get(fileName));
                     fileCheckout(fileName , targetCm.getId());
                     continue;
