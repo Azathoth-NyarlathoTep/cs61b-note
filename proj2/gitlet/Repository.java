@@ -396,6 +396,20 @@ public class Repository {
                     fileCheckout(fileName , targetCm.getId());
                     continue;
                 }
+                else { //以相同或者不同方式修改
+                    if(curCmMap.get(fileName).equals(targetCmMap.get(fileName))) {
+                        continue;
+                    } else {
+                        conflictExists = true;
+                        String contents1 = readContentsAsString(join(CWD ,fileName));
+                        Blob bl = Blob.fromId(targetCm.getFileMap().get(fileName));
+                        String contents2 = bl.getContents();
+                        String contents = String.format("<<<<<<< HEAD\n%s=======\n%s>>>>>>>\n", contents1, contents2);
+                        writeContents(join(CWD, fileName), contents);
+                        String blid = makeBlobId(fileName);
+                        stage.getAddMap().put(fileName, blid);
+                    }
+                }
             }
         }
         if(conflictExists) {
