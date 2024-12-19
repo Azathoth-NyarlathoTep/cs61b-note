@@ -337,7 +337,7 @@ public class Repository {
             }
             targetCm = Commit.fromId(targetCm.getParentId());
         }
-        targetCm = Commit.fromId(curCm.getParentId());
+        targetCm = Commit.fromFile(getBranchFile(branchName));
 
         if(splitCm.getId().equals(curCm.getId())) {
             commitCheckout(curCm ,targetCm);
@@ -381,6 +381,10 @@ public class Repository {
                             continue;
                         }
                     }
+                } else {
+                    if (splitCmMap.get(fileName).equals(targetCmMap.get(fileName)) && !curCmMap.containsKey(fileName)) {
+                        continue;
+                    }
                 }
                 conflictExists  = dealConflict(splitCm ,curCm ,targetCm ,fileName);
             } else {
@@ -397,6 +401,8 @@ public class Repository {
         if(conflictExists) {
             System.out.println("Encountered a merge conflict.");
         }
+
+        mergeCommit(branchName);
     }
     /* TODO: fill in the rest of this class. */
 }

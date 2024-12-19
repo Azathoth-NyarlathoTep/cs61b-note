@@ -27,8 +27,7 @@ public class Commit implements Serializable {
     private String id;
     private String message;
     private String timestamp;
-    private String parent;
-    private String parent2;
+    private List<String> parents = new ArrayList<>();
     private Map<String ,String> FileMap = new HashMap<String ,String>();
     /* TODO: fill in the rest of this class. */
     public Commit(Commit cm , String msg) {
@@ -36,7 +35,6 @@ public class Commit implements Serializable {
         if(cm == null) {        //init的情况
             Date date = new Date(0);
             timestamp = dateToTimeStamp(date);
-            parent = null;
             List<String> ls = new ArrayList<>(FileMap.values());
             ls.add(message);
             ls.add(timestamp);
@@ -45,13 +43,26 @@ public class Commit implements Serializable {
             FileMap = new HashMap<>(cm.getFileMap());
             Date date = new Date();
             timestamp = dateToTimeStamp(date);
-            parent = cm.getId();
+            parents.add(cm.getId());
             List<String> ls = new ArrayList<>();
             ls.add(message);
             ls.add(timestamp);
-            ls.add(parent);
+            ls.add(parents.get(0));
             id = sha1(ls);
         }
+    }
+
+    public Commit(Commit cm1 ,Commit cm2 , String msg) {
+        message = msg;
+        Date date = new Date();
+        timestamp = dateToTimeStamp(date);
+        parents.add(cm1.getId());
+        parents.add(cm2.getId());
+        FileMap = new HashMap<>(cm1.getFileMap());
+        List<String> ls = new ArrayList<>(FileMap.values());
+        ls.add(message);
+        ls.add(timestamp);
+        id = sha1(ls);
     }
 
     public String getId() {
@@ -59,7 +70,17 @@ public class Commit implements Serializable {
     }
 
     public String getParentId() {
-        return parent;
+        if(parents.isEmpty()) {
+            return null;
+        }
+        return parents.get(0);
+    }
+
+    public String getSecondParentId() {
+        if(parents.size() < 2) {
+            return null;
+        }
+        return parents.get(1);
     }
 
     public String getMessage() {
@@ -101,10 +122,15 @@ public class Commit implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder SB = new StringBuilder("===\n");
-        SB.append("commit " + id + "\n");
-        SB.append("Date: " + timestamp + "\n");
-        SB.append(message + "\n");
-        return SB.toString();
+        if(parents.size() <= 1) {
+            StringBuilder SB = new StringBuilder("===\n");
+            SB.append("commit " + id + "\n");
+            SB.append("Date: " + timestamp + "\n");
+            SB.append(message + "\n");
+            return SB.toString();
+        }
+        return String.format(
+                "===\ncommit %s\nMerge: %s %s\nDate: %s\n%s\n",
+                id, getParentId().substring(0, 7), getSecondParentId().substring(0, 7), timestamp, message);
     }
 }

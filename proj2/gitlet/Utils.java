@@ -449,4 +449,33 @@ class Utils {
         }
         return null;
     }
+
+    public static void mergeCommit(String branchName) {
+        Stage stage = Stage.fromFile(INDEX_FILE);
+        if(stage.empty()) {
+            exitWithSuccess("No changes added to the commit.");
+        }
+
+        String msg = String.format("Merged %s into %s" ,branchName, getCurrentBranch());
+        Commit cm = Commit.fromFile(getBranchFile());
+        Commit cm2 = Commit.fromFile(getBranchFile(branchName));
+        Commit newCm = new Commit(cm ,cm2 ,msg);
+
+        //addition
+        if(!stage.addEmpty()) {
+            for(Map.Entry<String ,String> entry : stage.getAddMap().entrySet()) {
+                newCm.addFile(entry.getKey(), entry.getValue());
+            }
+        }
+        //removal
+        if(!stage.addEmpty()) {
+            for(String Filename : stage.getRmList()) {
+                newCm.removeFile(Filename);
+            }
+        }
+
+        stage.clearAndSave();
+        newCm.saveCommit();
+        writeContents(getBranchFile() , newCm.getId());
+    }
 }
