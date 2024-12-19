@@ -21,7 +21,7 @@ public class Stage implements Serializable {
         return readObject(file ,Stage.class);
     }
 
-    public  Map<String , String> getAddMap() {
+    public  Map<String, String> getAddMap() {
         return addMap;
     }
 

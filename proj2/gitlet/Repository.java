@@ -20,7 +20,7 @@ public class Repository {
      */
 
     /** The current working directory. */
-    public static final File CWD = new File(System.getProperty("user.dir"));  //调用了这个方法可以得到CWD为当前工作目录并作为File对象
+    public static final File CWD = new File(System.getProperty("user.dir"));
     /** The .gitlet directory. */
     public static final File GITLET_DIR = join(CWD, ".gitlet");
     public static final File OBJECTS_DIR = join(GITLET_DIR, "Objects");
@@ -32,8 +32,8 @@ public class Repository {
     public static final File INDEX_FILE = join(GITLET_DIR, "INDEX");
     public static final File MASTER_FILE = join(HEADS_DIR, "master");
 
-    public static void Init(){
-        if(GITLET_DIR.exists()){
+    public static void init() {
+        if (GITLET_DIR.exists()) {
             exitWithSuccess("A Gitlet version-control system already exists in the current directory.");
         }
         GITLET_DIR.mkdir();
@@ -53,62 +53,62 @@ public class Repository {
             throw new RuntimeException(e);
         }
 
-        Commit cm = new Commit(null,"initial commit");
+        Commit cm = new Commit(null, "initial commit");
         String id = cm.getId();
         cm.saveCommit();
         writeContents(MASTER_FILE, cm.getId());
         updateHEAD("master");
     }
 
-    public static void Add(String FileName) {
+    public static void add(String fileName) {
         checkGitLet();
 
-        if(!join(CWD, FileName).exists()) {
+        if (!join(CWD, fileName).exists()) {
             exitWithSuccess("File does not exist.");
         }
         Commit cm = Commit.fromFile(getBranchFile());
 
-        if(cm.getFileMap()!=null && cm.getFileMap().containsKey(FileName)) {
+        if (cm.getFileMap() != null && cm.getFileMap().containsKey(fileName)) {
             Stage stage = Stage.fromFile(INDEX_FILE);
-            String target = makeBlobId(FileName);
-            Blob blob = new Blob(FileName);
-            if(stage.getRmList().contains(FileName)) {
-                stage.getRmList().remove(FileName);
+            String target = makeBlobId(fileName);
+            Blob blob = new Blob(fileName);
+            if (stage.getRmList().contains(fileName)) {
+                stage.getRmList().remove(fileName);
                 stage.saveStage();
-                return ;
+                return;
             }
-            if(cm.getFileMap().get(FileName).equals(target)) {
+            if (cm.getFileMap().get(fileName).equals(target)) {
                 exitWithSuccess("");
             } else {
                 createObjectFile(target, blob);
-                stage.AddAndSave(FileName, target);
+                stage.AddAndSave(fileName, target);
             }
         } else {
-            String Blob_id = makeBlobId(FileName);
-            Blob blob = new Blob(FileName);
+            String blobID = makeBlobId(fileName);
+            Blob blob = new Blob(fileName);
             Stage stage = Stage.fromFile(INDEX_FILE);
-            createObjectFile(Blob_id, blob);
-            stage.AddAndSave(FileName, Blob_id);
+            createObjectFile(blobID, blob);
+            stage.AddAndSave(fileName, blobID);
         }
     }
 
-    public static void Remove(String FileName) {
+    public static void remove(String fileName) {
         checkGitLet();
 
         Stage stage = Stage.fromFile(INDEX_FILE);
-        if(stage.getAddMap().containsKey(FileName)) {
-            stage.RemoveFromAdd(FileName);
-            return ;
+        if (stage.getAddMap().containsKey(fileName)) {
+            stage.RemoveFromAdd(fileName);
+            return;
         }
 
         Commit cm = Commit.fromFile(getBranchFile());
-        if(cm.getFileMap()!=null && cm.getFileMap().containsKey(FileName)) {
-            stage.RemoveAndSave(FileName);
-            File file = new File(FileName);
-            if(file.exists()) {
+        if (cm.getFileMap() != null && cm.getFileMap().containsKey(fileName)) {
+            stage.RemoveAndSave(fileName);
+            File file = new File(fileName);
+            if (file.exists()) {
                 file.delete();
             }
-            return ;
+            return;
         }
         exitWithSuccess("No reason to remove the file.");
     }
@@ -116,13 +116,13 @@ public class Repository {
     public static void commit(String[] args) {
         checkGitLet();
 
-        if(args.length < 2 || args[1].isEmpty()) {
+        if (args.length < 2 || args[1].isEmpty()) {
             exitWithSuccess("Please enter a commit message.");
         }
         String msg = args[1];
 
         Stage stage = Stage.fromFile(INDEX_FILE);
-        if(stage.empty()) {
+        if (stage.empty()) {
             exitWithSuccess("No changes added to the commit.");
         }
 
@@ -130,15 +130,15 @@ public class Repository {
         Commit newcm = new Commit(cm, msg);
 
         //addition
-        if(!stage.addEmpty()) {
-            for(Map.Entry<String ,String> entry : stage.getAddMap().entrySet()) {
+        if (!stage.addEmpty()) {
+            for (Map.Entry<String, String> entry : stage.getAddMap().entrySet()) {
                 newcm.addFile(entry.getKey(), entry.getValue());
             }
         }
         //removal
-        if(!stage.rmEmpty()) {
-            for(String Filename : stage.getRmList()) {
-                newcm.removeFile(Filename);
+        if (!stage.rmEmpty()) {
+            for (String fileName : stage.getRmList()) {
+                newcm.removeFile(fileName);
             }
         }
 
@@ -147,11 +147,11 @@ public class Repository {
         writeContents(getBranchFile(), newcm.getId());
     }
 
-    public static void Log() {
+    public static void log() {
         checkGitLet();
 
         Commit cm = Commit.fromFile(getBranchFile());
-        while(cm != null) {
+        while (cm != null) {
             System.out.println(cm);
             cm = Commit.fromId(cm.getParentId());
         }
@@ -163,36 +163,36 @@ public class Repository {
         List<String> ls = plainFilenamesIn(COMMITS_DIR);
 
         if (ls != null) {
-            for(String filename : ls) {
+            for (String filename : ls) {
                 Commit cm = Commit.fromId(filename);
                 System.out.println(cm);
             }
         }
     }
 
-    public static void Find(String[] args) {
+    public static void find(String[] args) {
         checkGitLet();
 
         List<String> ls = plainFilenamesIn(COMMITS_DIR);
         boolean found = false;
         String msg = args[1];
 
-        if(ls != null) {
-            for(String filename : ls) {
+        if (ls != null) {
+            for (String filename : ls) {
                 Commit cm = Commit.fromId(filename);
-                if(cm.getMessage().equals(msg)) {
+                if (cm.getMessage().equals(msg)) {
                     System.out.println(cm.getId());
                     found = true;
                 }
             }
         }
 
-        if(!found) {
+        if (!found) {
             exitWithSuccess("Found no commit with that message.");
         }
     }
 
-    public static void Status() {
+    public static void status() {
         checkGitLet();
 
         String curBranch = getCurrentBranch();
@@ -200,8 +200,8 @@ public class Repository {
         //Branches
         System.out.println("=== Branches ===");
         List<String> ls = plainFilenamesIn(HEADS_DIR);
-        for(String filename : ls) {
-            if(filename.equals(curBranch)) {
+        for (String filename : ls) {
+            if (filename.equals(curBranch)) {
                 System.out.println("*" + curBranch);
             } else {
                 System.out.println(filename);
@@ -212,14 +212,14 @@ public class Repository {
         //Staged Files
         System.out.println("=== Staged Files ===");
         Stage stage = Stage.fromFile(INDEX_FILE);
-        for(String filename : stage.getAddMap().keySet()) {
+        for (String filename : stage.getAddMap().keySet()) {
             System.out.println(filename);
         }
         System.out.println();
 
         //Removed Files
         System.out.println("=== Removed Files ===");
-        for(String filename : stage.getRmList()) {
+        for (String filename : stage.getRmList()) {
             System.out.println(filename);
         }
         System.out.println();
@@ -237,43 +237,46 @@ public class Repository {
 
         switch (args.length) {
             case 3:
-                fileCheckout(args[2] ,readContentsAsString(getBranchFile()));
+                fileCheckout(args[2], readContentsAsString(getBranchFile()));
                 break;
             case 4:
-                fileCheckout(args[3] ,getFullID(args[1]));
+                fileCheckout(args[3], getFullID(args[1]));
                 break;
             case 2:
                 String branchName = args[1];
-                if(!join(HEADS_DIR ,branchName).exists()) {
+                if (!join(HEADS_DIR, branchName).exists()) {
                     exitWithSuccess("No such branch exists.");
                 }
-                if(getCurrentBranch().equals(branchName)) {
+                if (getCurrentBranch().equals(branchName)) {
                     exitWithSuccess("No need to checkout the current branch.");
                 }
                 Commit cm = Commit.fromFile(getBranchFile());
                 Commit targetCm = Commit.fromId(readContentsAsString(join(HEADS_DIR, branchName)));
 //                checkUntrackedLocal(cm ,targetCm);
                 checkUntrackedOverwritten(cm, targetCm);
-                if(!readContentsAsString(getBranchFile()).equals(readContentsAsString(getBranchFile(branchName)))) {
+                if (!readContentsAsString(getBranchFile())
+                        .equals(readContentsAsString(getBranchFile(branchName)))) {
                     commitCheckout(cm, targetCm);
                 }
 
                 updateHEAD(branchName);
                 break;
+            default:
+                break;
         }
     }
 
-    public static void Branch(String[] args) {
+    public static void branch(String[] args) {
         checkGitLet();
 
         String branchName = args[1];
-        if(join(HEADS_DIR ,branchName).exists()) {
+        if (join(HEADS_DIR, branchName).exists()) {
             exitWithSuccess("A branch with that name already exists.");
         }
         File newBranchFile = join(HEADS_DIR, branchName);
         try {
             newBranchFile.createNewFile();
-            writeContents(newBranchFile,readContentsAsString(getBranchFile()));
+            writeContents(newBranchFile, readContentsAsString(getBranchFile()));
         } catch(IOException e) {
             throw new RuntimeException(e);
         }
@@ -283,22 +286,22 @@ public class Repository {
         checkGitLet();
 
         String branchName = args[1];
-        if(!join(HEADS_DIR ,branchName).exists()) {
+        if (!join(HEADS_DIR, branchName).exists()) {
             exitWithSuccess("A branch with that name does not exist.");
         }
-        if(getCurrentBranch().equals(branchName)) {
+        if (getCurrentBranch().equals(branchName)) {
             exitWithSuccess("Cannot remove the current branch.");
         }
 
-        File BranchFile = join(HEADS_DIR, branchName);
-        BranchFile.delete();
+        File branchFile = join(HEADS_DIR, branchName);
+        branchFile.delete();
     }
 
     public static void reset(String[] args) {
         checkGitLet();
 
         String cmId = getFullID(args[1]);
-        if(!join(COMMITS_DIR ,cmId).exists()) {
+        if (!join(COMMITS_DIR, cmId).exists()) {
             exitWithSuccess("No commit with that id exists.");
         }
         Commit curCm = Commit.fromFile(getBranchFile());
@@ -310,13 +313,13 @@ public class Repository {
         stage.clearAndSave();
     }
 
-    public static void Merge(String[] args) {
+    public static void merge(String[] args) {
         checkGitLet();
 
         String branchName = args[1];
         checkStageClean();
         checkBranchExists(branchName);
-        if(getCurrentBranch().equals(branchName)) {
+        if (getCurrentBranch().equals(branchName)) {
             exitWithSuccess("Cannot merge a branch with itself.");
         }
 
@@ -326,8 +329,8 @@ public class Repository {
 
         Set<String> st = getAllParents(curCm);
         Commit splitCm = null;
-        while(targetCm != null) {
-            if(st.contains(targetCm.getId())) {
+        while (targetCm != null) {
+            if (st.contains(targetCm.getId())) {
                 splitCm = Commit.fromId(targetCm.getId());
                 break;
             }
@@ -335,44 +338,47 @@ public class Repository {
         }
         targetCm = Commit.fromFile(getBranchFile(branchName));
 
-        if(splitCm.getId().equals(curCm.getId())) {
+        if (splitCm.getId().equals(curCm.getId())) {
             commitCheckout(curCm ,targetCm);
             exitWithSuccess("Current branch fast-forwarded.");
         }
-        if(splitCm.getId().equals(targetCm.getId())) {
+        if (splitCm.getId().equals(targetCm.getId())) {
             exitWithSuccess("Given branch is an ancestor of the current branch.");
         }
 
         boolean conflictExists = false;
         Set<String> allFiles = new HashSet<String>();
-        Map<String ,String> curCmMap = curCm.getFileMap();
-        Map<String ,String> targetCmMap = targetCm.getFileMap();
-        Map<String ,String> splitCmMap = splitCm.getFileMap();
+        Map<String, String> curCmMap = curCm.getFileMap();
+        Map<String, String> targetCmMap = targetCm.getFileMap();
+        Map<String, String> splitCmMap = splitCm.getFileMap();
         Stage stage = Stage.fromFile(INDEX_FILE);
-        for(String s:curCmMap.keySet()) {
+        for (String s:curCmMap.keySet()) {
             allFiles.add(s);
         }
-        for(String s:targetCmMap.keySet()) {
+        for (String s:targetCmMap.keySet()) {
             allFiles.add(s);
         }
-        for(String fileName : allFiles) {
-            if(splitCmMap.containsKey(fileName)) {
-                if(curCmMap.containsKey(fileName) && targetCmMap.containsKey(fileName)) {
-                    if(!splitCmMap.get(fileName).equals(targetCmMap.get(fileName)) && splitCmMap.get(fileName).equals(curCmMap.get(fileName))) { //case 1
-                        stage.getAddMap().put(fileName,targetCmMap.get(fileName));
+        for (String fileName : allFiles) {
+            if (splitCmMap.containsKey(fileName)) {
+                if (curCmMap.containsKey(fileName) && targetCmMap.containsKey(fileName)) {
+                    if (!splitCmMap.get(fileName).equals(targetCmMap.get(fileName))
+                            && splitCmMap.get(fileName).equals(curCmMap.get(fileName))) { //case 1
+                        stage.getAddMap().put(fileName, targetCmMap.get(fileName));
                         stage.saveStage();
-                        fileCheckout(fileName , targetCm.getId());
+                        fileCheckout(fileName, targetCm.getId());
                         continue;
                     }
-                    if(!splitCmMap.get(fileName).equals(curCmMap.get(fileName)) && splitCmMap.get(fileName).equals(targetCmMap.get(fileName))) { //case 2
+                    if (!splitCmMap.get(fileName).equals(curCmMap.get(fileName))
+                            && splitCmMap.get(fileName).equals(targetCmMap.get(fileName))) { //case 2
                         continue;
                     }
-                    if(splitCmMap.get(fileName).equals(curCmMap.get(fileName)) && splitCmMap.get(fileName).equals(targetCmMap.get(fileName))) {
+                    if (splitCmMap.get(fileName).equals(curCmMap.get(fileName))
+                            && splitCmMap.get(fileName).equals(targetCmMap.get(fileName))) {
                         continue;
                     }
                 }
-                if(curCmMap.containsKey(fileName)) {
-                    if(splitCmMap.get(fileName).equals(curCmMap.get(fileName))) { //case 6
+                if (curCmMap.containsKey(fileName)) {
+                    if (splitCmMap.get(fileName).equals(curCmMap.get(fileName))) { //case 6
                         stage.getRmList().add(fileName);
                         stage.saveStage();
                         join(CWD ,fileName).delete();
@@ -385,17 +391,17 @@ public class Repository {
                 }
                 conflictExists  = dealConflict(splitCm, curCm, targetCm, fileName);
             } else {
-                if(!targetCmMap.containsKey(fileName) && curCmMap.containsKey(fileName)) { //case 4
+                if (!targetCmMap.containsKey(fileName) && curCmMap.containsKey(fileName)) { //case 4
                     continue;
                 }
-                if(!curCmMap.containsKey(fileName) && targetCmMap.containsKey(fileName)) { //case 5
+                if (!curCmMap.containsKey(fileName) && targetCmMap.containsKey(fileName)) { //case 5
                     stage.getAddMap().put(fileName, targetCmMap.get(fileName));
                     stage.saveStage();
                     fileCheckout(fileName, targetCm.getId());
                     continue;
                 }
                 else { //以相同或者不同方式修改
-                    if(curCmMap.get(fileName).equals(targetCmMap.get(fileName))) {
+                    if (curCmMap.get(fileName).equals(targetCmMap.get(fileName))) {
                         continue;
                     } else {
                         conflictExists = true;
@@ -410,11 +416,10 @@ public class Repository {
                 }
             }
         }
-        if(conflictExists) {
+        if (conflictExists) {
             System.out.println("Encountered a merge conflict.");
         }
 
         mergeCommit(branchName);
     }
-    /* TODO: fill in the rest of this class. */
 }

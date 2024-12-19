@@ -16,10 +16,10 @@ public class Main {
         String firstArg = args[0];
         switch(firstArg) {
             case "init":
-                Repository.Init();
+                Repository.init();
                 break;
             case "add":
-                Repository.Add(args[1]);
+                Repository.add(args[1]);
                 break;
             case "commit":
                 Repository.commit(args);
@@ -28,22 +28,22 @@ public class Main {
                 Repository.checkout(args);
                 break;
             case "log":
-                Repository.Log();
+                Repository.log();
                 break;
             case "rm":
-                Repository.Remove(args[1]);
+                Repository.remove(args[1]);
                 break;
             case "global-log":
                 Repository.globalLog();
                 break;
             case "find":
-                Repository.Find(args);
+                Repository.find(args);
                 break;
             case "status":
-                Repository.Status();
+                Repository.status();
                 break;
             case "branch":
-                Repository.Branch(args);
+                Repository.branch(args);
                 break;
             case "rm-branch":
                 Repository.rmBranch(args);
@@ -52,7 +52,7 @@ public class Main {
                 Repository.reset(args);
                 break;
             case "merge":
-                Repository.Merge(args);
+                Repository.merge(args);
                 break;
             default:
                 exitWithSuccess("No command with that name exists.");
