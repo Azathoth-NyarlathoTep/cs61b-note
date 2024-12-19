@@ -360,7 +360,8 @@ public class Repository {
             allFiles.add(s);
         }
         for (String fileName : allFiles) {
-            casesOutOfSplit(targetCmMap, curCmMap, fileName, targetCm, conflictExists, curCm, splitCmMap, splitCm);
+            conflictExists = casesOutOfSplit(targetCmMap, curCmMap, fileName,
+                    targetCm, conflictExists, curCm, splitCmMap, splitCm);
         }
         if (conflictExists) {
             System.out.println("Encountered a merge conflict.");
