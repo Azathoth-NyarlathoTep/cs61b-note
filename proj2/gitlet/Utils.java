@@ -288,12 +288,13 @@ class Utils {
 //          File file = join(Repository.HEADS_DIR,s);
 //          File root = join(Repository.GITLET_DIR);
 //          writeContents(Repository.HEAD_FILE,file.toPath().relativize(root.toPath()).toString());
-        File branchFile = join(Repository.HEADS_DIR, s) ;
+        File branchFile = join(Repository.HEADS_DIR, s);
         writeContents(Repository.HEAD_FILE,
                 Repository.GITLET_DIR.toURI().relativize(branchFile.toURI()).getPath());
     }
 
-    static File getBranchFile(String... args) {       //这里选用...来传入args数组，这是好的，因为这样可以传入0个参数也是可以的，比之String[]更灵活，String[]更适合明确要用的是字符串数组的情况
+    static File getBranchFile(String... args) {
+        //这里选用...来传入args数组，这是好的，因为这样可以传入0个参数也是可以的，比之String[]更灵活，String[]更适合明确要用的是字符串数组的情况
         switch (args.length) {
             case 0:
                 return join(Repository.GITLET_DIR, readContentsAsString(HEAD_FILE));
@@ -365,7 +366,8 @@ class Utils {
         for (String filename : targetCm.getFileMap().keySet()) {
             if (join(CWD, filename).exists() && !curCm.getFileMap().containsKey(filename)) {
                 exitWithSuccess(
-                        "There is an untracked file in the way; delete it, or add and commit it first.");
+                        "There is an untracked file in the way;" +
+                                " delete it, or add and commit it first.");
             }
         }
     }
@@ -383,7 +385,8 @@ class Utils {
 
             if (!curCm.getFileMap().containsKey(filename) && !stage.contains(filename)) {
                 exitWithSuccess(
-                        "There is an untracked file in the  way; delete it, or add and commit it first.");
+                        "There is an untracked file in the  way;" +
+                                " delete it, or add and commit it first.");
             }
         }
     }
@@ -396,14 +399,14 @@ class Utils {
     }
 
     static void checkBranchExists(String branchName) {
-        if (!join(HEADS_DIR,branchName).exists()) {
+        if (!join(HEADS_DIR, branchName).exists()) {
             exitWithSuccess("A branch with that name does not exist.");
         }
     }
 
     static Set<String> getAllParents(Commit cm) {
         Set<String> parents = new HashSet<>();
-        while(cm != null) {
+        while (cm != null) {
             parents.add(cm.getId());
             if (cm.getSecondParentId() != null) {
                 parents.addAll(getAllParents(Commit.fromId(cm.getSecondParentId())));
@@ -413,13 +416,14 @@ class Utils {
         return parents;
     }
 
-    public static boolean dealConflict(Commit splitCm, Commit curCm, Commit targetCm, String fileName) {
+    public static boolean dealConflict(Commit splitCm, Commit curCm,
+                                       Commit targetCm, String fileName) {
         boolean conflictExist = false;
-        if (!targetCm.getFileMap().containsKey(fileName)) { // modified in head, deleted in target
+        if (!targetCm.getFileMap().containsKey(fileName)) {
             conflictExist = true;
-        } else if (!curCm.getFileMap().containsKey(fileName)) { // modified in target, deleted in head
+        } else if (!curCm.getFileMap().containsKey(fileName)) {
             conflictExist = true;
-        } else if (!curCm.getFileMap().get(fileName).equals(targetCm.getFileMap().get(fileName))) { // both modified
+        } else if (!curCm.getFileMap().get(fileName).equals(targetCm.getFileMap().get(fileName))) {
             conflictExist = true;
         }
         if (conflictExist) {
@@ -433,7 +437,8 @@ class Utils {
                 Blob bl = Blob.fromId(targetCm.getFileMap().get(fileName));
                 contents2 = bl.getContents();
             }
-            String contents = String.format("<<<<<<< HEAD\n%s=======\n%s>>>>>>>\n", contents1, contents2);
+            String contents = String.format(
+                    "<<<<<<< HEAD\n%s=======\n%s>>>>>>>\n", contents1, contents2);
             writeContents(join(CWD, fileName), contents);
             String blid = makeBlobId(fileName);
             stage.getAddMap().put(fileName, blid);
@@ -475,8 +480,8 @@ class Utils {
         }
         //removal
         if (!stage.addEmpty()) {
-            for (String Filename : stage.getRmList()) {
-                newCm.removeFile(Filename);
+            for (String fileName : stage.getRmList()) {
+                newCm.removeFile(fileName);
             }
         }
 

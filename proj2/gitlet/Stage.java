@@ -29,10 +29,10 @@ public class Stage implements Serializable {
         return rmList;
     }
 
-   public void saveStage() {
+    public void saveStage() {
         File filepath = Repository.INDEX_FILE;
         writeObject(filepath, this);
-   }
+    }
 
     public void addAndSave(String filename, String id) {
         addMap.put(filename, id);

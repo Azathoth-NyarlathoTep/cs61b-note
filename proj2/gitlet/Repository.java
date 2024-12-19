@@ -394,29 +394,7 @@ public class Repository {
                 }
                 conflictExists  = dealConflict(splitCm, curCm, targetCm, fileName);
             } else {
-                if (!targetCmMap.containsKey(fileName) && curCmMap.containsKey(fileName)) { //case 4
-                    continue;
-                }
-                if (!curCmMap.containsKey(fileName) && targetCmMap.containsKey(fileName)) { //case 5
-                    stage.getAddMap().put(fileName, targetCmMap.get(fileName));
-                    stage.saveStage();
-                    fileCheckout(fileName, targetCm.getId());
-                    continue;
-                } else { //以相同或者不同方式修改
-                    if (curCmMap.get(fileName).equals(targetCmMap.get(fileName))) {
-                        continue;
-                    } else {
-                        conflictExists = true;
-                        String contents1 = readContentsAsString(join(CWD, fileName));
-                        Blob bl = Blob.fromId(targetCm.getFileMap().get(fileName));
-                        String contents2 = bl.getContents();
-                        String contents = String.format("<<<<<<< HEAD\n%s=======\n%s>>>>>>>\n",
-                                contents1, contents2);
-                        writeContents(join(CWD, fileName), contents);
-                        String blid = makeBlobId(fileName);
-                        stage.getAddMap().put(fileName, blid);
-                    }
-                }
+                casesOutOfSplit(targetCmMap, curCmMap, fileName, targetCm, conflictExists);
             }
         }
         if (conflictExists) {
@@ -424,5 +402,36 @@ public class Repository {
         }
 
         mergeCommit(branchName);
+    }
+
+    public static boolean casesOutOfSplit(
+            Map<String, String> targetCmMap,
+            Map<String, String> curCmMap, String fileName,
+            Commit targetCm, boolean conflictExists) {
+        Stage stage = Stage.fromFile(INDEX_FILE);
+        if (!targetCmMap.containsKey(fileName) && curCmMap.containsKey(fileName)) { //case 4
+            return conflictExists;
+        }
+        if (!curCmMap.containsKey(fileName) && targetCmMap.containsKey(fileName)) { //case 5
+            stage.getAddMap().put(fileName, targetCmMap.get(fileName));
+            stage.saveStage();
+            fileCheckout(fileName, targetCm.getId());
+            return conflictExists;
+        } else { //以相同或者不同方式修改
+            if (curCmMap.get(fileName).equals(targetCmMap.get(fileName))) {
+                return conflictExists;
+            } else {
+                conflictExists = true;
+                String contents1 = readContentsAsString(join(CWD, fileName));
+                Blob bl = Blob.fromId(targetCm.getFileMap().get(fileName));
+                String contents2 = bl.getContents();
+                String contents = String.format("<<<<<<< HEAD\n%s=======\n%s>>>>>>>\n",
+                        contents1, contents2);
+                writeContents(join(CWD, fileName), contents);
+                String blid = makeBlobId(fileName);
+                stage.getAddMap().put(fileName, blid);
+            }
+        }
+        return conflictExists;
     }
 }

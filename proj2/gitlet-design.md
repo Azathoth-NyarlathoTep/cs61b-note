@@ -50,7 +50,7 @@ heads对应的是本地的仓库中的所有分支，如果我们有一个`maste
 这个Blob类较为特殊，它是id和文本内容的映射，也正是它映射的是用户真正要存储的文件，所以才能以这样的形式存储下来，其本身的存储还是以sha-1编码存在`Objects`中的
 
 ### Class 3 Stage类
-包含一个Map用于表示添加的文件及其对应的Blob和一个List用于表示删除的文件列表，因为一个文件可能对应多个Blob版本但是删除只有文件的对应所以无需用Map来存储
+包含一个Map用于表示添加的文件极其对应的Blob和一个List用于表示删除的文件列表，因为一个文件可能对应多个Blob版本但是删除只有文件的对应所以无需用Map来存储
 
 ### Class 4 Utils
 这个类是Proj提供的工具类，也可以自己定义静态方法在这里以供项目使用
@@ -111,11 +111,70 @@ heads对应的是本地的仓库中的所有分支，如果我们有一个`maste
 3. 在目标分支中修改过而没有在当前分支中修改过的文件，应该暂存为目标分支中的版本。
 4. 在目标分支中没有修改而在当前分支修改过的文件，则应保留为当前分支的版本。
 5. 如果在两个分支中一个文件被相同的修改或者都被删除，则在新的提交中仍然是这样，如果都被删除了那么哪怕CWD中有也是未被跟踪状态，不放在新提交中
-6. 分裂点不存在但存在于当前分支的需要保持原样
-7. 分裂点不存在但存在于目标分支的要被`checkout`并且暂存
 8. 在分裂点存在且当前分支未修改且目标分支中不存在的都应该删除
 9. 在分裂点存在且目标分支未修改且当前分支不存在的都应该保持不存在
 10. 在当前分支和目标分支都进行不同修改的会引起冲突
 
 ## Persistence
 
+## Style
+
+文本文件在POSIX标准中在最后一行需要换行符，即空出最后一行，这是因为许多工具和编译器都期望文本文件是这样格式化的，这在本Proj中也有`Style`上的要求
+
+对于`<>`,`()`这些括号中，分割参数之间一般以`, `即逗号再加空格的形式
+
+对于命名，有`camelCase`的标准要求，即不能以下划线开头，且要以小写字母开头，对于静态变量，要全用大写字母且以下划线分隔。
+
+同一行不能有过多字符，一般不可超过100个，可以进行以下改进
+方法调用链拆分
+```
+// 原始代码（超出长度限制）
+String result = someObject.someMethod(arg1, arg2).anotherMethod(arg3, arg4).finalMethod();
+
+// 拆分后
+String result = someObject.someMethod(arg1, arg2)
+                          .anotherMethod(arg3, arg4)
+                          .finalMethod();
+
+```
+
+长条件语句拆分
+```
+// 原始代码（超出长度限制）
+if (condition1 && condition2 && condition3 && condition4 && condition5) {
+    doSomething();
+}
+
+// 拆分后
+if (condition1 && condition2 
+        && condition3 && condition4 
+        && condition5) {
+    doSomething();
+}
+
+```
+
+字符串拼接换行
+```
+// 原始代码（超出长度限制）
+String message = "This is a very long message that exceeds the character limit for a single line.";
+
+// 拆分后
+String message = "This is a very long message that " +
+                 "exceeds the character limit for a single line.";
+
+```
+
+多参数调用拆分
+```
+// 原始代码（超出长度限制）
+someMethod(param1, param2, param3, param4, param5, param6, param7);
+
+// 拆分后
+someMethod(param1, param2, param3, 
+           param4, param5, param6, 
+           param7);
+
+```
+
+if,while,for等跟()的语句都要与()之间间隔一个空格。
