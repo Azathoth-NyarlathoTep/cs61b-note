@@ -235,6 +235,9 @@ public class Repository {
 
     public static void checkout(String[] args) {
         checkGitLet();
+        if (args.length > 2 && !args[args.length - 2].equals("--")) {
+            exitWithSuccess("Incorrect operands.");
+        }
 
         switch (args.length) {
             case 3:
