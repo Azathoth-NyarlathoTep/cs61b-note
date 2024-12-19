@@ -360,42 +360,7 @@ public class Repository {
             allFiles.add(s);
         }
         for (String fileName : allFiles) {
-            if (splitCmMap.containsKey(fileName)) {
-                if (curCmMap.containsKey(fileName) && targetCmMap.containsKey(fileName)) {
-                    if (!splitCmMap.get(fileName).equals(targetCmMap.get(fileName))
-                            && splitCmMap.get(fileName).equals(curCmMap.get(fileName))) { //case 1
-                        stage.getAddMap().put(fileName, targetCmMap.get(fileName));
-                        stage.saveStage();
-                        fileCheckout(fileName, targetCm.getId());
-                        continue;
-                    }
-                    if (!splitCmMap.get(fileName).equals(curCmMap.get(fileName))
-                            && splitCmMap.get(fileName)
-                            .equals(targetCmMap.get(fileName))) { //case 2
-                        continue;
-                    }
-                    if (splitCmMap.get(fileName).equals(curCmMap.get(fileName))
-                            && splitCmMap.get(fileName).equals(targetCmMap.get(fileName))) {
-                        continue;
-                    }
-                }
-                if (curCmMap.containsKey(fileName)) {
-                    if (splitCmMap.get(fileName).equals(curCmMap.get(fileName))) { //case 6
-                        stage.getRmList().add(fileName);
-                        stage.saveStage();
-                        join(CWD, fileName).delete();
-                        continue;
-                    }
-                } else {
-                    if (splitCmMap.get(fileName).equals(targetCmMap.get(fileName))
-                            && !curCmMap.containsKey(fileName)) { //case 7
-                        continue;
-                    }
-                }
-                conflictExists  = dealConflict(splitCm, curCm, targetCm, fileName);
-            } else {
-                casesOutOfSplit(targetCmMap, curCmMap, fileName, targetCm, conflictExists);
-            }
+            casesOutOfSplit(targetCmMap, curCmMap, fileName, targetCm, conflictExists, curCm, splitCmMap, splitCm);
         }
         if (conflictExists) {
             System.out.println("Encountered a merge conflict.");
@@ -407,29 +372,65 @@ public class Repository {
     public static boolean casesOutOfSplit(
             Map<String, String> targetCmMap,
             Map<String, String> curCmMap, String fileName,
-            Commit targetCm, boolean conflictExists) {
+            Commit targetCm, boolean conflictExists, Commit curCm,
+            Map<String, String> splitCmMap, Commit splitCm) {
         Stage stage = Stage.fromFile(INDEX_FILE);
-        if (!targetCmMap.containsKey(fileName) && curCmMap.containsKey(fileName)) { //case 4
-            return conflictExists;
-        }
-        if (!curCmMap.containsKey(fileName) && targetCmMap.containsKey(fileName)) { //case 5
-            stage.getAddMap().put(fileName, targetCmMap.get(fileName));
-            stage.saveStage();
-            fileCheckout(fileName, targetCm.getId());
-            return conflictExists;
-        } else { //以相同或者不同方式修改
-            if (curCmMap.get(fileName).equals(targetCmMap.get(fileName))) {
-                return conflictExists;
+        if (splitCmMap.containsKey(fileName)) {
+            if (curCmMap.containsKey(fileName) && targetCmMap.containsKey(fileName)) {
+                if (!splitCmMap.get(fileName).equals(targetCmMap.get(fileName))
+                        && splitCmMap.get(fileName).equals(curCmMap.get(fileName))) { //case 1
+                    stage.getAddMap().put(fileName, targetCmMap.get(fileName));
+                    stage.saveStage();
+                    fileCheckout(fileName, targetCm.getId());
+                    return conflictExists;
+                }
+                if (!splitCmMap.get(fileName).equals(curCmMap.get(fileName))
+                        && splitCmMap.get(fileName)
+                        .equals(targetCmMap.get(fileName))) { //case 2
+                    return conflictExists;
+                }
+                if (splitCmMap.get(fileName).equals(curCmMap.get(fileName))
+                        && splitCmMap.get(fileName).equals(targetCmMap.get(fileName))) {
+                    return conflictExists;
+                }
+            }
+            if (curCmMap.containsKey(fileName)) {
+                if (splitCmMap.get(fileName).equals(curCmMap.get(fileName))) { //case 6
+                    stage.getRmList().add(fileName);
+                    stage.saveStage();
+                    join(CWD, fileName).delete();
+                    return conflictExists;
+                }
             } else {
-                conflictExists = true;
-                String contents1 = readContentsAsString(join(CWD, fileName));
-                Blob bl = Blob.fromId(targetCm.getFileMap().get(fileName));
-                String contents2 = bl.getContents();
-                String contents = String.format("<<<<<<< HEAD\n%s=======\n%s>>>>>>>\n",
-                        contents1, contents2);
-                writeContents(join(CWD, fileName), contents);
-                String blid = makeBlobId(fileName);
-                stage.getAddMap().put(fileName, blid);
+                if (splitCmMap.get(fileName).equals(targetCmMap.get(fileName))
+                        && !curCmMap.containsKey(fileName)) { //case 7
+                    return conflictExists;
+                }
+            }
+            conflictExists = dealConflict(splitCm, curCm, targetCm, fileName);
+        } else {
+            if (!targetCmMap.containsKey(fileName) && curCmMap.containsKey(fileName)) { //case 4
+                return conflictExists;
+            }
+            if (!curCmMap.containsKey(fileName) && targetCmMap.containsKey(fileName)) { //case 5
+                stage.getAddMap().put(fileName, targetCmMap.get(fileName));
+                stage.saveStage();
+                fileCheckout(fileName, targetCm.getId());
+                return conflictExists;
+            } else { //以相同或者不同方式修改
+                if (curCmMap.get(fileName).equals(targetCmMap.get(fileName))) {
+                    return conflictExists;
+                } else {
+                    conflictExists = true;
+                    String contents1 = readContentsAsString(join(CWD, fileName));
+                    Blob bl = Blob.fromId(targetCm.getFileMap().get(fileName));
+                    String contents2 = bl.getContents();
+                    String contents = String.format("<<<<<<< HEAD\n%s=======\n%s>>>>>>>\n",
+                            contents1, contents2);
+                    writeContents(join(CWD, fileName), contents);
+                    String blid = makeBlobId(fileName);
+                    stage.getAddMap().put(fileName, blid);
+                }
             }
         }
         return conflictExists;

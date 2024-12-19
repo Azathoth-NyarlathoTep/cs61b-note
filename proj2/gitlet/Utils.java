@@ -366,8 +366,8 @@ class Utils {
         for (String filename : targetCm.getFileMap().keySet()) {
             if (join(CWD, filename).exists() && !curCm.getFileMap().containsKey(filename)) {
                 exitWithSuccess(
-                        "There is an untracked file in the way;" +
-                                " delete it, or add and commit it first.");
+                        "There is an untracked file in the way;"
+                                + " delete it, or add and commit it first.");
             }
         }
     }
@@ -385,8 +385,8 @@ class Utils {
 
             if (!curCm.getFileMap().containsKey(filename) && !stage.contains(filename)) {
                 exitWithSuccess(
-                        "There is an untracked file in the  way;" +
-                                " delete it, or add and commit it first.");
+                        "There is an untracked file in the  way;"
+                                + " delete it, or add and commit it first.");
             }
         }
     }
