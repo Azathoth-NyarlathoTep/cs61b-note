@@ -456,7 +456,7 @@ class Utils {
             exitWithSuccess("No changes added to the commit.");
         }
 
-        String msg = String.format("Merged %s into %s" ,branchName, getCurrentBranch());
+        String msg = String.format("Merged %s into %s." ,branchName, getCurrentBranch());
         Commit cm = Commit.fromFile(getBranchFile());
         Commit cm2 = Commit.fromFile(getBranchFile(branchName));
         Commit newCm = new Commit(cm ,cm2 ,msg);
