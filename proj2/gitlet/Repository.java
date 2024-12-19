@@ -241,10 +241,10 @@ public class Repository {
                 fileCheckout(args[2] ,readContentsAsString(getBranchFile()));
                 break;
             case 4:
-                fileCheckout(args[3] ,args[1]);
+                fileCheckout(args[3] ,getFullID(args[1]));
                 break;
             case 2:
-                String branchName = getFullID(args[1]);
+                String branchName = args[1];
                 if(!join(HEADS_DIR ,branchName).exists()) {
                     exitWithSuccess("No such branch exists.h");
                 }
