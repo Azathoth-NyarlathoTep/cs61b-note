@@ -80,6 +80,9 @@ public class Commit implements Serializable {
             return null;
         }
 
+        if(!join(Repository.COMMITS_DIR ,id).exists()) {
+            return null;
+        }
         File file = join(Repository.COMMITS_DIR ,id);
         return readObject(file ,Commit.class);
     }
