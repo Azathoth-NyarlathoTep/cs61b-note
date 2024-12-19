@@ -1,7 +1,5 @@
 package gitlet;
 
-// TODO: any imports you need here
-
 import java.io.File;
 import java.io.Serializable;
 import java.util.*;
@@ -9,14 +7,11 @@ import java.util.*;
 import static gitlet.Utils.*;
 
 /** Represents a gitlet commit object.
- *  TODO: It's a good idea to give a description here of what else this Class
  *  does at a high level.
  *
- *  @author TODO
  */
 public class Commit implements Serializable {
     /**
-     * TODO: add instance variables here.
      *
      * List all instance variables of the Commit class here with a useful
      * comment above them describing what that variable represents and how that
@@ -28,9 +23,9 @@ public class Commit implements Serializable {
     private String message;
     private String timestamp;
     private List<String> parents = new ArrayList<>();
-    private Map<String ,String> FileMap = new HashMap<String ,String>();
+    private Map<String, String> FileMap = new HashMap<>();
     /* TODO: fill in the rest of this class. */
-    public Commit(Commit cm , String msg) {
+    public Commit(Commit cm, String msg) {
         message = msg;
         if(cm == null) {        //init的情况
             Date date = new Date(0);
@@ -52,7 +47,7 @@ public class Commit implements Serializable {
         }
     }
 
-    public Commit(Commit cm1 ,Commit cm2 , String msg) {
+    public Commit(Commit cm1, Commit cm2 ,String msg) {
         message = msg;
         Date date = new Date();
         timestamp = dateToTimeStamp(date);
@@ -88,7 +83,7 @@ public class Commit implements Serializable {
     }
 
     public void saveCommit() {
-        createCmObjectFile(id , this);
+        createCmObjectFile(id ,this);
     }
 
     public static Commit fromFile(File fileName) {
@@ -101,18 +96,18 @@ public class Commit implements Serializable {
             return null;
         }
 
-        if(!join(Repository.COMMITS_DIR ,id).exists()) {
+        if(!join(Repository.COMMITS_DIR, id).exists()) {
             return null;
         }
-        File file = join(Repository.COMMITS_DIR ,id);
-        return readObject(file ,Commit.class);
+        File file = join(Repository.COMMITS_DIR, id);
+        return readObject(file, Commit.class);
     }
 
-    public Map<String ,String> getFileMap() {
+    public Map<String , String> getFileMap() {
         return FileMap;
     }
 
-    public void addFile(String fileName ,String blid) {
+    public void addFile(String fileName, String blid) {
         FileMap.put(fileName, blid);
     }
 

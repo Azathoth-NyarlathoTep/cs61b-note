@@ -260,8 +260,8 @@ class Utils {
 //        return dateFormat.format(date);
     }
 
-    static void createObjectFile(String id , Serializable obj) {
-        File filepath = join(Repository.OBJECTS_DIR,id.substring(0,2));
+    static void createObjectFile(String id, Serializable obj) {
+        File filepath = join(Repository.OBJECTS_DIR,id.substring(0, 2));
         if(!filepath.exists()){
             filepath.mkdirs();
         }
@@ -274,8 +274,8 @@ class Utils {
         }
     }
 
-    static void createCmObjectFile(String id , Serializable obj) {
-        File file= join(Repository.COMMITS_DIR ,id);
+    static void createCmObjectFile(String id, Serializable obj) {
+        File file= join(Repository.COMMITS_DIR, id);
         try {
             file.createNewFile();
             writeObject(file, obj);
@@ -298,7 +298,7 @@ class Utils {
             case 0:
                 return join(Repository.GITLET_DIR ,readContentsAsString(HEAD_FILE));
             case 1:
-                return join(HEADS_DIR ,args[0]);
+                return join(HEADS_DIR, args[0]);
         }
         return null;
     }
@@ -322,7 +322,7 @@ class Utils {
         return cr;
     }
 
-    static void fileCheckout(String filename ,String id) {
+    static void fileCheckout(String filename, String id) {
         id = getFullID(id);
         Commit cm = Commit.fromId(id);
         if(cm == null) {
@@ -333,18 +333,18 @@ class Utils {
             exitWithSuccess("File does not exist in that commit.");
         }
         Blob blob = Blob.fromId(blobId);
-        File target = join(Repository.CWD,filename);
+        File target = join(Repository.CWD, filename);
         writeContents(target, blob.getContents());
     }
 
-    static void commitCheckout(Commit curCm ,Commit targetCm) {
+    static void commitCheckout(Commit curCm, Commit targetCm) {
         for(String filename : curCm.getFileMap().keySet()) {
             if(!targetCm.getFileMap().containsKey(filename)) {
-                File f = join(CWD ,filename);
+                File f = join(CWD, filename);
                 f.delete();
             } else {
                 if(!targetCm.getFileMap().get(filename).equals(curCm.getFileMap().get(filename))) {
-                    fileCheckout(filename ,targetCm.getId());
+                    fileCheckout(filename, targetCm.getId());
                 }
             }
         }
@@ -358,16 +358,16 @@ class Utils {
         }
     }
 
-    static void checkUntrackedOverwritten(Commit curCm ,Commit targetCm) { //参考答案版本只是遍历了当前的头提交而未有遍历暂存区，而按个人理解应该都要遍历以确认是否满足“未被跟踪的条件”
+    static void checkUntrackedOverwritten(Commit curCm, Commit targetCm) { //参考答案版本只是遍历了当前的头提交而未有遍历暂存区，而按个人理解应该都要遍历以确认是否满足“未被跟踪的条件”
 //        Stage stage = Stage.fromFile(INDEX_FILE);
         for(String filename : targetCm.getFileMap().keySet()){
-            if(join(CWD ,filename).exists() && !curCm.getFileMap().containsKey(filename)){
+            if(join(CWD, filename).exists() && !curCm.getFileMap().containsKey(filename)){
                 exitWithSuccess("There is an untracked file in the way; delete it, or add and commit it first.");
             }
         }
     }
 
-    static void checkUntrackedLocal(Commit curCm ,Commit targetCm) {
+    static void checkUntrackedLocal(Commit curCm, Commit targetCm) {
         Stage stage = Stage.fromFile(INDEX_FILE);
 //        for(String filename : targetCm.getFileMap().keySet()){
 //            if(join(Repository.CWD ,filename).exists() && !curCm.getFileMap().containsKey(filename) && !stage.contains(filename)){
@@ -461,14 +461,14 @@ class Utils {
             exitWithSuccess("No changes added to the commit.");
         }
 
-        String msg = String.format("Merged %s into %s." ,branchName, getCurrentBranch());
+        String msg = String.format("Merged %s into %s.", branchName, getCurrentBranch());
         Commit cm = Commit.fromFile(getBranchFile());
         Commit cm2 = Commit.fromFile(getBranchFile(branchName));
-        Commit newCm = new Commit(cm ,cm2 ,msg);
+        Commit newCm = new Commit(cm, cm2, msg);
 
         //addition
         if(!stage.addEmpty()) {
-            for(Map.Entry<String ,String> entry : stage.getAddMap().entrySet()) {
+            for(Map.Entry<String, String> entry : stage.getAddMap().entrySet()) {
                 newCm.addFile(entry.getKey(), entry.getValue());
             }
         }
@@ -481,6 +481,6 @@ class Utils {
 
         stage.clearAndSave();
         newCm.saveCommit();
-        writeContents(getBranchFile() , newCm.getId());
+        writeContents(getBranchFile(), newCm.getId());
     }
 }

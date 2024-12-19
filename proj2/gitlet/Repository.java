@@ -6,17 +6,13 @@ import java.util.*;
 
 import static gitlet.Utils.*;
 
-// TODO: any imports you need here
 
 /** Represents a gitlet repository.
- *  TODO: It's a good idea to give a description here of what else this Class
  *  does at a high level.
  *
- *  @author TODO
  */
 public class Repository {
     /**
-     * TODO: add instance variables here.
      *
      * List all instance variables of the Repository class here with a useful
      * comment above them describing what that variable represents and how that
@@ -60,14 +56,14 @@ public class Repository {
         Commit cm = new Commit(null,"initial commit");
         String id = cm.getId();
         cm.saveCommit();
-        writeContents(MASTER_FILE ,cm.getId());
+        writeContents(MASTER_FILE, cm.getId());
         updateHEAD("master");
     }
 
     public static void Add(String FileName) {
         checkGitLet();
 
-        if(!join(CWD ,FileName).exists()) {
+        if(!join(CWD, FileName).exists()) {
             exitWithSuccess("File does not exist.");
         }
         Commit cm = Commit.fromFile(getBranchFile());
@@ -84,15 +80,15 @@ public class Repository {
             if(cm.getFileMap().get(FileName).equals(target)) {
                 exitWithSuccess("");
             } else {
-                createObjectFile(target ,blob);
-                stage.AddAndSave(FileName , target);
+                createObjectFile(target, blob);
+                stage.AddAndSave(FileName, target);
             }
         } else {
             String Blob_id = makeBlobId(FileName);
             Blob blob = new Blob(FileName);
             Stage stage = Stage.fromFile(INDEX_FILE);
-            createObjectFile(Blob_id ,blob);
-            stage.AddAndSave(FileName , Blob_id);
+            createObjectFile(Blob_id, blob);
+            stage.AddAndSave(FileName, Blob_id);
         }
     }
 
@@ -131,7 +127,7 @@ public class Repository {
         }
 
         Commit cm = Commit.fromFile(getBranchFile());
-        Commit newcm = new Commit(cm ,msg);
+        Commit newcm = new Commit(cm, msg);
 
         //addition
         if(!stage.addEmpty()) {
@@ -148,7 +144,7 @@ public class Repository {
 
         stage.clearAndSave();
         newcm.saveCommit();
-        writeContents(getBranchFile() , newcm.getId());
+        writeContents(getBranchFile(), newcm.getId());
     }
 
     public static void Log() {
@@ -255,11 +251,11 @@ public class Repository {
                     exitWithSuccess("No need to checkout the current branch.");
                 }
                 Commit cm = Commit.fromFile(getBranchFile());
-                Commit targetCm = Commit.fromId(readContentsAsString(join(HEADS_DIR ,branchName)));
+                Commit targetCm = Commit.fromId(readContentsAsString(join(HEADS_DIR, branchName)));
 //                checkUntrackedLocal(cm ,targetCm);
                 checkUntrackedOverwritten(cm, targetCm);
                 if(!readContentsAsString(getBranchFile()).equals(readContentsAsString(getBranchFile(branchName)))) {
-                    commitCheckout(cm ,targetCm);
+                    commitCheckout(cm, targetCm);
                 }
 
                 updateHEAD(branchName);
@@ -274,7 +270,7 @@ public class Repository {
         if(join(HEADS_DIR ,branchName).exists()) {
             exitWithSuccess("A branch with that name already exists.");
         }
-        File newBranchFile = join(HEADS_DIR ,branchName);
+        File newBranchFile = join(HEADS_DIR, branchName);
         try {
             newBranchFile.createNewFile();
             writeContents(newBranchFile,readContentsAsString(getBranchFile()));
@@ -294,7 +290,7 @@ public class Repository {
             exitWithSuccess("Cannot remove the current branch.");
         }
 
-        File BranchFile = join(HEADS_DIR ,branchName);
+        File BranchFile = join(HEADS_DIR, branchName);
         BranchFile.delete();
     }
 
@@ -307,9 +303,9 @@ public class Repository {
         }
         Commit curCm = Commit.fromFile(getBranchFile());
         Commit targetCm = Commit.fromId(cmId);
-        checkUntrackedOverwritten(curCm ,targetCm);
-        commitCheckout(curCm ,targetCm);
-        writeContents(getBranchFile(),cmId);
+        checkUntrackedOverwritten(curCm, targetCm);
+        commitCheckout(curCm, targetCm);
+        writeContents(getBranchFile(), cmId);
         Stage stage = Stage.fromFile(INDEX_FILE);
         stage.clearAndSave();
     }
@@ -326,7 +322,7 @@ public class Repository {
 
         Commit curCm = Commit.fromFile(getBranchFile());
         Commit targetCm = Commit.fromFile(getBranchFile(branchName));
-        checkUntrackedOverwritten(curCm ,targetCm);
+        checkUntrackedOverwritten(curCm, targetCm);
 
         Set<String> st = getAllParents(curCm);
         Commit splitCm = null;
@@ -387,15 +383,15 @@ public class Repository {
                         continue;
                     }
                 }
-                conflictExists  = dealConflict(splitCm ,curCm ,targetCm ,fileName);
+                conflictExists  = dealConflict(splitCm, curCm, targetCm, fileName);
             } else {
                 if(!targetCmMap.containsKey(fileName) && curCmMap.containsKey(fileName)) { //case 4
                     continue;
                 }
                 if(!curCmMap.containsKey(fileName) && targetCmMap.containsKey(fileName)) { //case 5
-                    stage.getAddMap().put(fileName,targetCmMap.get(fileName));
+                    stage.getAddMap().put(fileName, targetCmMap.get(fileName));
                     stage.saveStage();
-                    fileCheckout(fileName , targetCm.getId());
+                    fileCheckout(fileName, targetCm.getId());
                     continue;
                 }
                 else { //以相同或者不同方式修改

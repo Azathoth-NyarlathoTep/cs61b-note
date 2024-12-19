@@ -24,8 +24,8 @@ public class Blob implements Serializable {
     }
 
     public static Blob fromId(String id) {
-        File filepath = join(Repository.OBJECTS_DIR ,id.substring(0, 2));
-        Blob blob = readObject(join(filepath ,id.substring(2)) ,Blob.class);
+        File filepath = join(Repository.OBJECTS_DIR, id.substring(0, 2));
+        Blob blob = readObject(join(filepath, id.substring(2)), Blob.class);
         return blob;
     }
 }
