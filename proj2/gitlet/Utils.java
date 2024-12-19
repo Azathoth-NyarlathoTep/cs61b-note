@@ -404,6 +404,9 @@ class Utils {
         Set<String> parents = new HashSet<>();
         while(cm != null) {
             parents.add(cm.getId());
+            if(cm.getSecondParentId() != null) {
+                parents.addAll(getAllParents(Commit.fromId(cm.getSecondParentId())));
+            }
             cm = Commit.fromId(cm.getParentId());
         }
         return parents;
