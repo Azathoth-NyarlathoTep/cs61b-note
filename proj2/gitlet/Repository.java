@@ -34,7 +34,8 @@ public class Repository {
 
     public static void init() {
         if (GITLET_DIR.exists()) {
-            exitWithSuccess("A Gitlet version-control system already exists in the current directory.");
+            exitWithSuccess(
+                    "A Gitlet version-control system already exists in the current directory.");
         }
         GITLET_DIR.mkdir();
         OBJECTS_DIR.mkdir();
@@ -81,14 +82,14 @@ public class Repository {
                 exitWithSuccess("");
             } else {
                 createObjectFile(target, blob);
-                stage.AddAndSave(fileName, target);
+                stage.addAndSave(fileName, target);
             }
         } else {
             String blobID = makeBlobId(fileName);
             Blob blob = new Blob(fileName);
             Stage stage = Stage.fromFile(INDEX_FILE);
             createObjectFile(blobID, blob);
-            stage.AddAndSave(fileName, blobID);
+            stage.addAndSave(fileName, blobID);
         }
     }
 
@@ -97,13 +98,13 @@ public class Repository {
 
         Stage stage = Stage.fromFile(INDEX_FILE);
         if (stage.getAddMap().containsKey(fileName)) {
-            stage.RemoveFromAdd(fileName);
+            stage.removeFromAdd(fileName);
             return;
         }
 
         Commit cm = Commit.fromFile(getBranchFile());
         if (cm.getFileMap() != null && cm.getFileMap().containsKey(fileName)) {
-            stage.RemoveAndSave(fileName);
+            stage.removeAndSave(fileName);
             File file = new File(fileName);
             if (file.exists()) {
                 file.delete();
@@ -277,7 +278,7 @@ public class Repository {
         try {
             newBranchFile.createNewFile();
             writeContents(newBranchFile, readContentsAsString(getBranchFile()));
-        } catch(IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -339,7 +340,7 @@ public class Repository {
         targetCm = Commit.fromFile(getBranchFile(branchName));
 
         if (splitCm.getId().equals(curCm.getId())) {
-            commitCheckout(curCm ,targetCm);
+            commitCheckout(curCm, targetCm);
             exitWithSuccess("Current branch fast-forwarded.");
         }
         if (splitCm.getId().equals(targetCm.getId())) {
@@ -369,7 +370,8 @@ public class Repository {
                         continue;
                     }
                     if (!splitCmMap.get(fileName).equals(curCmMap.get(fileName))
-                            && splitCmMap.get(fileName).equals(targetCmMap.get(fileName))) { //case 2
+                            && splitCmMap.get(fileName)
+                            .equals(targetCmMap.get(fileName))) { //case 2
                         continue;
                     }
                     if (splitCmMap.get(fileName).equals(curCmMap.get(fileName))
@@ -381,11 +383,12 @@ public class Repository {
                     if (splitCmMap.get(fileName).equals(curCmMap.get(fileName))) { //case 6
                         stage.getRmList().add(fileName);
                         stage.saveStage();
-                        join(CWD ,fileName).delete();
+                        join(CWD, fileName).delete();
                         continue;
                     }
                 } else {
-                    if (splitCmMap.get(fileName).equals(targetCmMap.get(fileName)) && !curCmMap.containsKey(fileName)) { //case 7
+                    if (splitCmMap.get(fileName).equals(targetCmMap.get(fileName))
+                            && !curCmMap.containsKey(fileName)) { //case 7
                         continue;
                     }
                 }
@@ -399,16 +402,16 @@ public class Repository {
                     stage.saveStage();
                     fileCheckout(fileName, targetCm.getId());
                     continue;
-                }
-                else { //以相同或者不同方式修改
+                } else { //以相同或者不同方式修改
                     if (curCmMap.get(fileName).equals(targetCmMap.get(fileName))) {
                         continue;
                     } else {
                         conflictExists = true;
-                        String contents1 = readContentsAsString(join(CWD ,fileName));
+                        String contents1 = readContentsAsString(join(CWD, fileName));
                         Blob bl = Blob.fromId(targetCm.getFileMap().get(fileName));
                         String contents2 = bl.getContents();
-                        String contents = String.format("<<<<<<< HEAD\n%s=======\n%s>>>>>>>\n", contents1, contents2);
+                        String contents = String.format("<<<<<<< HEAD\n%s=======\n%s>>>>>>>\n",
+                                contents1, contents2);
                         writeContents(join(CWD, fileName), contents);
                         String blid = makeBlobId(fileName);
                         stage.getAddMap().put(fileName, blid);

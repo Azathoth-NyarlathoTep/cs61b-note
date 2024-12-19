@@ -67,7 +67,7 @@ class Utils {
     static String getFileSha1(String filename) {
         File file = new File(filename);
         String contents = readContentsAsString(file);
-        return sha1(filename ,contents);
+        return sha1(filename, contents);
     }
 
     /* FILE DELETION */
@@ -246,7 +246,7 @@ class Utils {
 
     //以下代码都是自己添加的方法
     static void exitWithSuccess(String s) {
-        if(!Objects.equals(s, "") && s != null){
+        if (!Objects.equals(s, "") && s != null) {
             System.out.println(s);
         }
         System.exit(0);
@@ -261,21 +261,21 @@ class Utils {
     }
 
     static void createObjectFile(String id, Serializable obj) {
-        File filepath = join(Repository.OBJECTS_DIR,id.substring(0, 2));
-        if(!filepath.exists()){
+        File filepath = join(Repository.OBJECTS_DIR, id.substring(0, 2));
+        if (!filepath.exists()) {
             filepath.mkdirs();
         }
-        File file = join(filepath,id.substring(2));
+        File file = join(filepath, id.substring(2));
         try {
             file.createNewFile();
             writeObject(file, obj);
-        }catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     static void createCmObjectFile(String id, Serializable obj) {
-        File file= join(Repository.COMMITS_DIR, id);
+        File file = join(Repository.COMMITS_DIR, id);
         try {
             file.createNewFile();
             writeObject(file, obj);
@@ -288,19 +288,20 @@ class Utils {
 //          File file = join(Repository.HEADS_DIR,s);
 //          File root = join(Repository.GITLET_DIR);
 //          writeContents(Repository.HEAD_FILE,file.toPath().relativize(root.toPath()).toString());
-            File branchFile = join(Repository.HEADS_DIR, s) ;
-            writeContents(Repository.HEAD_FILE,
+        File branchFile = join(Repository.HEADS_DIR, s) ;
+        writeContents(Repository.HEAD_FILE,
                 Repository.GITLET_DIR.toURI().relativize(branchFile.toURI()).getPath());
     }
 
     static File getBranchFile(String... args) {       //这里选用...来传入args数组，这是好的，因为这样可以传入0个参数也是可以的，比之String[]更灵活，String[]更适合明确要用的是字符串数组的情况
-        switch(args.length) {
+        switch (args.length) {
             case 0:
-                return join(Repository.GITLET_DIR ,readContentsAsString(HEAD_FILE));
+                return join(Repository.GITLET_DIR, readContentsAsString(HEAD_FILE));
             case 1:
                 return join(HEADS_DIR, args[0]);
+            default:
+                return null;
         }
-        return null;
     }
 
     static String makeBlobId(String filename) {
@@ -310,7 +311,7 @@ class Utils {
     }
 
     static void checkGitLet() {
-        if(!Repository.GITLET_DIR.exists()) {
+        if (!Repository.GITLET_DIR.exists()) {
             exitWithSuccess("Not in an initialized GitLet directory.");
         }
     }
@@ -325,11 +326,11 @@ class Utils {
     static void fileCheckout(String filename, String id) {
         id = getFullID(id);
         Commit cm = Commit.fromId(id);
-        if(cm == null) {
+        if (cm == null) {
             exitWithSuccess("No commit with that id exists.");
         }
         String blobId = cm.getFileMap().get(filename);
-        if(blobId == null) {
+        if (blobId == null) {
             exitWithSuccess("File does not exist in that commit.");
         }
         Blob blob = Blob.fromId(blobId);
@@ -338,64 +339,64 @@ class Utils {
     }
 
     static void commitCheckout(Commit curCm, Commit targetCm) {
-        for(String filename : curCm.getFileMap().keySet()) {
-            if(!targetCm.getFileMap().containsKey(filename)) {
+        for (String filename : curCm.getFileMap().keySet()) {
+            if (!targetCm.getFileMap().containsKey(filename)) {
                 File f = join(CWD, filename);
                 f.delete();
             } else {
-                if(!targetCm.getFileMap().get(filename).equals(curCm.getFileMap().get(filename))) {
+                if (!targetCm.getFileMap().get(filename).equals(curCm.getFileMap().get(filename))) {
                     fileCheckout(filename, targetCm.getId());
                 }
             }
         }
 
-        if(targetCm.getFileMap() != null) {
-            for(String filename : targetCm.getFileMap().keySet()) {
-                if(curCm.getFileMap().get(filename) == null) {
-                    fileCheckout(filename ,targetCm.getId());
+        if (targetCm.getFileMap() != null) {
+            for (String filename : targetCm.getFileMap().keySet()) {
+                if (curCm.getFileMap().get(filename) == null) {
+                    fileCheckout(filename, targetCm.getId());
                 }
             }
         }
     }
 
-    static void checkUntrackedOverwritten(Commit curCm, Commit targetCm) { //参考答案版本只是遍历了当前的头提交而未有遍历暂存区，而按个人理解应该都要遍历以确认是否满足“未被跟踪的条件”
+    static void checkUntrackedOverwritten(Commit curCm, Commit targetCm) {
+        //参考答案版本只是遍历了当前的头提交而未有遍历暂存区，而按个人理解应该都要遍历以确认是否满足“未被跟踪的条件”
 //        Stage stage = Stage.fromFile(INDEX_FILE);
-        for(String filename : targetCm.getFileMap().keySet()){
-            if(join(CWD, filename).exists() && !curCm.getFileMap().containsKey(filename)){
-                exitWithSuccess("There is an untracked file in the way; delete it, or add and commit it first.");
+        for (String filename : targetCm.getFileMap().keySet()) {
+            if (join(CWD, filename).exists() && !curCm.getFileMap().containsKey(filename)) {
+                exitWithSuccess(
+                        "There is an untracked file in the way; delete it, or add and commit it first.");
             }
         }
     }
 
     static void checkUntrackedLocal(Commit curCm, Commit targetCm) {
         Stage stage = Stage.fromFile(INDEX_FILE);
-//        for(String filename : targetCm.getFileMap().keySet()){
-//            if(join(Repository.CWD ,filename).exists() && !curCm.getFileMap().containsKey(filename) && !stage.contains(filename)){
-//                exitWithSuccess("There is an untracked file in the  way; delete it, or add and commit it first.");
-//            }
-//        }
 
         List<String> allFiles = plainFilenamesIn(CWD);
-        for(String filename : allFiles) {
-            if(Objects.equals(filename, "gitlet-design.md") || Objects.equals(filename, "Makefile") || Objects.equals(filename, "pom.xml")) {
+        for (String filename : allFiles) {
+            if (Objects.equals(filename, "gitlet-design.md")
+                    || Objects.equals(filename, "Makefile")
+                    || Objects.equals(filename, "pom.xml")) {
                 continue;
             } //To be deleted.
 
-            if(!curCm.getFileMap().containsKey(filename) && !stage.contains(filename)) {
-                exitWithSuccess("There is an untracked file in the  way; delete it, or add and commit it first.");
+            if (!curCm.getFileMap().containsKey(filename) && !stage.contains(filename)) {
+                exitWithSuccess(
+                        "There is an untracked file in the  way; delete it, or add and commit it first.");
             }
         }
     }
 
     static void checkStageClean() {
         Stage stage = Stage.fromFile(INDEX_FILE);
-        if(!stage.empty()) {
+        if (!stage.empty()) {
             exitWithSuccess("You have uncommitted changes.");
         }
     }
 
     static void checkBranchExists(String branchName) {
-        if(!join(HEADS_DIR,branchName).exists()) {
+        if (!join(HEADS_DIR,branchName).exists()) {
             exitWithSuccess("A branch with that name does not exist.");
         }
     }
@@ -404,7 +405,7 @@ class Utils {
         Set<String> parents = new HashSet<>();
         while(cm != null) {
             parents.add(cm.getId());
-            if(cm.getSecondParentId() != null) {
+            if (cm.getSecondParentId() != null) {
                 parents.addAll(getAllParents(Commit.fromId(cm.getSecondParentId())));
             }
             cm = Commit.fromId(cm.getParentId());
@@ -442,13 +443,13 @@ class Utils {
     }
 
     public static String getFullID(String id) {
-        if(id.length() == 40) {
+        if (id.length() == 40) {
             return id;
         }
 
         List<String> fileNames = plainFilenamesIn(COMMITS_DIR);
-        for(String fileName : fileNames) {
-            if(fileName.startsWith(id)) {
+        for (String fileName : fileNames) {
+            if (fileName.startsWith(id)) {
                 return fileName;
             }
         }
@@ -457,7 +458,7 @@ class Utils {
 
     public static void mergeCommit(String branchName) {
         Stage stage = Stage.fromFile(INDEX_FILE);
-        if(stage.empty()) {
+        if (stage.empty()) {
             exitWithSuccess("No changes added to the commit.");
         }
 
@@ -467,14 +468,14 @@ class Utils {
         Commit newCm = new Commit(cm, cm2, msg);
 
         //addition
-        if(!stage.addEmpty()) {
-            for(Map.Entry<String, String> entry : stage.getAddMap().entrySet()) {
+        if (!stage.addEmpty()) {
+            for (Map.Entry<String, String> entry : stage.getAddMap().entrySet()) {
                 newCm.addFile(entry.getKey(), entry.getValue());
             }
         }
         //removal
-        if(!stage.addEmpty()) {
-            for(String Filename : stage.getRmList()) {
+        if (!stage.addEmpty()) {
+            for (String Filename : stage.getRmList()) {
                 newCm.removeFile(Filename);
             }
         }

@@ -9,7 +9,7 @@ import java.util.Map;
 import static gitlet.Utils.*;
 
 public class Stage implements Serializable {
-    private final Map<String , String> addMap;
+    private final Map<String, String> addMap;
     private final List<String> rmList;
 
     public Stage() {
@@ -18,7 +18,7 @@ public class Stage implements Serializable {
     }
 
     public static Stage fromFile(File file) {
-        return readObject(file ,Stage.class);
+        return readObject(file, Stage.class);
     }
 
     public  Map<String, String> getAddMap() {
@@ -30,21 +30,21 @@ public class Stage implements Serializable {
     }
 
    public void saveStage() {
-       File filepath = Repository.INDEX_FILE;
-       writeObject(filepath , this);
+        File filepath = Repository.INDEX_FILE;
+        writeObject(filepath, this);
    }
 
-    public void AddAndSave(String filename, String id) {
+    public void addAndSave(String filename, String id) {
         addMap.put(filename, id);
         saveStage();
     }
 
-    public void RemoveFromAdd(String filename) {
+    public void removeFromAdd(String filename) {
         addMap.remove(filename);
         saveStage();
     }
 
-    public void RemoveAndSave(String filename) {
+    public void removeAndSave(String filename) {
         rmList.add(filename);
         saveStage();
     }
@@ -56,11 +56,7 @@ public class Stage implements Serializable {
     }
 
     public boolean empty() {
-        if(this.addMap.isEmpty() && this.rmList.isEmpty()){
-            return true;
-        } else {
-            return false;
-        }
+        return this.addMap.isEmpty() && this.rmList.isEmpty();
     }
 
     public boolean addEmpty() {
@@ -72,7 +68,7 @@ public class Stage implements Serializable {
     }
 
     public boolean contains(String filename) {
-        if(addMap.containsKey(filename)){
+        if (addMap.containsKey(filename)) {
             return true;
         }
         return rmList.contains(filename);

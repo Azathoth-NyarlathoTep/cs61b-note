@@ -23,18 +23,18 @@ public class Commit implements Serializable {
     private String message;
     private String timestamp;
     private List<String> parents = new ArrayList<>();
-    private Map<String, String> FileMap = new HashMap<>();
+    private Map<String, String> fileMap = new HashMap<>();
     public Commit(Commit cm, String msg) {
         message = msg;
         if (cm == null) {        //init的情况
             Date date = new Date(0);
             timestamp = dateToTimeStamp(date);
-            List<String> ls = new ArrayList<>(FileMap.values());
+            List<String> ls = new ArrayList<>(fileMap.values());
             ls.add(message);
             ls.add(timestamp);
             id = sha1(ls);
         } else {
-            FileMap = new HashMap<>(cm.getFileMap());
+            fileMap = new HashMap<>(cm.getFileMap());
             Date date = new Date();
             timestamp = dateToTimeStamp(date);
             parents.add(cm.getId());
@@ -52,8 +52,8 @@ public class Commit implements Serializable {
         timestamp = dateToTimeStamp(date);
         parents.add(cm1.getId());
         parents.add(cm2.getId());
-        FileMap = new HashMap<>(cm1.getFileMap());
-        List<String> ls = new ArrayList<>(FileMap.values());
+        fileMap = new HashMap<>(cm1.getFileMap());
+        List<String> ls = new ArrayList<>(fileMap.values());
         ls.add(message);
         ls.add(timestamp);
         id = sha1(ls);
@@ -103,15 +103,15 @@ public class Commit implements Serializable {
     }
 
     public Map<String, String> getFileMap() {
-        return FileMap;
+        return fileMap;
     }
 
     public void addFile(String fileName, String blid) {
-        FileMap.put(fileName, blid);
+        fileMap.put(fileName, blid);
     }
 
     public void removeFile(String fileName) {
-        FileMap.remove(fileName);
+        fileMap.remove(fileName);
     }
 
     @Override
